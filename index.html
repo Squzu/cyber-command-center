@@ -3,18 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shridhar Kamath — Cybersecurity Professional Test</title>
-<meta name="description" content="Cybersecurity Engineer specializing in SIEM Engineering, Detection Engineering, OT Security, and Critical Infrastructure Monitoring.">
-<meta name="keywords" content="Cybersecurity Engineer, SIEM, Detection Engineering, OT Security, Guard6, LogPoint, MITRE ATT&CK">
-<meta property="og:title" content="Shridhar Kamath — Cybersecurity Professional">
-<meta property="og:description" content="SIEM Engineering · Detection Engineering · OT Security · Critical Infrastructure">
+<title>Shridhar Kamath — Cybersecurity Engineer</title>
+<meta name="description" content="Cybersecurity Engineer specializing in SIEM Engineering, Detection Engineering, OT/ICS Security, and Critical Infrastructure Monitoring.">
+<meta name="keywords" content="Cybersecurity Engineer, SIEM, Detection Engineering, OT Security, Guard6, LogPoint, MITRE ATT&CK, Siemens">
+<meta property="og:title" content="Shridhar Kamath — Cybersecurity Engineer">
+<meta property="og:description" content="SIEM Engineering · Detection Engineering · OT/ICS Security · Critical Infrastructure">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+<!-- LIQUID RAIN CANVAS -->
+<canvas id="rain-canvas"></canvas>
 
 <!-- LOADER -->
 <div id="loader">
@@ -23,7 +26,7 @@
       <svg viewBox="0 0 100 100"><polygon points="50,6 90,28 90,72 50,94 10,72 10,28" /></svg>
     </div>
     <div class="loader-bar"><div class="loader-bar-fill"></div></div>
-    <div class="loader-text">INITIALIZING SECURE SESSION<span class="dots"></span></div>
+    <div class="loader-text">ESTABLISHING SECURE CHANNEL<span class="dots"></span></div>
   </div>
 </div>
 
@@ -33,11 +36,12 @@
 
 <!-- NAV -->
 <nav>
-  <a href="#hero" class="nav-logo">SK</a>
+  <a href="#hero" class="nav-logo">SK://</a>
   <ul class="nav-links">
     <li><a href="#dashboard">Metrics</a></li>
     <li><a href="#experience">Experience</a></li>
     <li><a href="#skills">Skills</a></li>
+    <li><a href="#tools">Tools</a></li>
     <li><a href="#projects">Projects</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
@@ -47,6 +51,7 @@
   <a href="#dashboard" onclick="closeMobileNav()">Metrics</a>
   <a href="#experience" onclick="closeMobileNav()">Experience</a>
   <a href="#skills" onclick="closeMobileNav()">Skills</a>
+  <a href="#tools" onclick="closeMobileNav()">Tools</a>
   <a href="#projects" onclick="closeMobileNav()">Projects</a>
   <a href="#contact" onclick="closeMobileNav()">Contact</a>
 </div>
@@ -55,18 +60,19 @@
 <section id="hero">
   <canvas id="hero-canvas"></canvas>
   <div class="hero-content">
-    <div class="hero-eyebrow reveal">Threat Detection &amp; Critical Infrastructure</div>
+    <div class="hero-eyebrow reveal">OT/ICS Security · Detection Engineering · Critical Infrastructure</div>
     <h1 class="hero-name reveal">Shridhar Kamath</h1>
-    <p class="hero-title reveal">Cybersecurity Professional — SIEM &amp; Detection Engineering</p>
+    <p class="hero-title reveal">Cybersecurity Engineer — SIEM &amp; Detection Engineering</p>
     <div class="hero-tags reveal">
-      <span class="hero-tag">SIEM Engineering</span>
+      <span class="hero-tag">Guard6 / LogPoint</span>
       <span class="hero-tag">Detection Engineering</span>
-      <span class="hero-tag">OT Security</span>
+      <span class="hero-tag">OT / ICS Security</span>
       <span class="hero-tag">MITRE ATT&amp;CK</span>
+      <span class="hero-tag">Critical Infrastructure</span>
     </div>
     <div class="hero-buttons reveal">
-      <a href="#projects" class="btn-primary"><span>View Projects</span></a>
-      <a href="#contact" class="btn-secondary"><span>Get in Touch</span></a>
+      <a href="#projects" class="btn-primary"><span>[ View Projects ]</span></a>
+      <a href="#contact" class="btn-secondary"><span>[ Get in Touch ]</span></a>
     </div>
   </div>
   <div class="scroll-cue"><span></span></div>
@@ -76,22 +82,30 @@
 <section id="dashboard">
   <div class="container">
     <div class="section-header reveal">
-      <div class="section-eyebrow">By the numbers</div>
+      <div class="section-eyebrow">// by the numbers</div>
       <h2 class="section-title">Operational Impact</h2>
-      <p class="section-subtitle">Metrics from detection engineering and SOC operations work across critical infrastructure environments.</p>
+      <p class="section-subtitle">Metrics from detection engineering and SIEM operations across critical infrastructure environments including Power Grids, Wind Farms, EV Networks, and Nuclear facilities.</p>
     </div>
     <div class="metrics-grid">
       <div class="glass-card metric-card reveal tilt-card">
-        <div class="metric-value" data-target="150" data-suffix="+">0</div>
-        <div class="metric-label">Detection Rules Authored</div>
+        <div class="metric-value" data-target="350" data-suffix="+">0</div>
+        <div class="metric-label">Detection Rules &amp; Signatures</div>
       </div>
       <div class="glass-card metric-card reveal tilt-card">
         <div class="metric-value" data-target="40" data-suffix="+">0</div>
-        <div class="metric-label">MITRE ATT&amp;CK Techniques Mapped</div>
+        <div class="metric-label">Log Sources Onboarded</div>
       </div>
       <div class="glass-card metric-card reveal tilt-card">
-        <div class="metric-value" data-target="99" data-suffix="%">0</div>
-        <div class="metric-label">Log Source Uptime Maintained</div>
+        <div class="metric-value" data-target="18" data-suffix="+">0</div>
+        <div class="metric-label">Custom Parsers Built</div>
+      </div>
+      <div class="glass-card metric-card reveal tilt-card">
+        <div class="metric-value" data-target="8" data-suffix="+">0</div>
+        <div class="metric-label">Enterprise Customers Managed</div>
+      </div>
+      <div class="glass-card metric-card reveal tilt-card">
+        <div class="metric-value" data-target="150" data-suffix="+">0</div>
+        <div class="metric-label">SOPs &amp; Playbooks Authored</div>
       </div>
       <div class="glass-card metric-card reveal tilt-card">
         <div class="metric-value" data-target="24" data-suffix="/7">0</div>
@@ -105,63 +119,58 @@
 <section id="experience">
   <div class="container">
     <div class="section-header reveal">
-      <div class="section-eyebrow">Career path</div>
+      <div class="section-eyebrow">// career.log</div>
       <h2 class="section-title">Experience</h2>
-      <p class="section-subtitle">Hands-on roles across SOC operations, detection engineering, and OT security.</p>
+      <p class="section-subtitle">Hands-on roles across SOC operations, SIEM integration, detection engineering, and OT/ICS security monitoring.</p>
     </div>
     <div class="timeline">
+
       <div class="timeline-item reveal" onclick="toggleTimeline(this)">
         <div class="timeline-dot"></div>
         <div class="timeline-content glass-card">
-          <div class="timeline-date">2023 — Present</div>
-          <h3 class="timeline-role">Cybersecurity Professional</h3>
-          <div class="timeline-org">Critical Infrastructure Security Team</div>
-          <p class="timeline-summary">Leading detection engineering and SIEM operations for OT/ICS environments, building correlation rules mapped to MITRE ATT&amp;CK for ICS.</p>
+          <div class="timeline-date">Dec 2024 — Present</div>
+          <h3 class="timeline-role">Cybersecurity Engineer — SIEM, Detection Engineering &amp; Platform R&amp;D</h3>
+          <div class="timeline-org">Siemens Technology and Services Pvt. Ltd. | Bangalore, India</div>
+          <p class="timeline-summary">Administering the Guard6 (LogPoint) SIEM platform for 8+ enterprise customers across critical infrastructure including Power Grids, Wind Farms, EV Charging Networks, and Nuclear Power Plant environments.</p>
           <div class="timeline-details">
             <ul>
-              <li>Engineered 150+ detection rules in LogPoint covering lateral movement, credential abuse, and ICS protocol anomalies.</li>
-              <li>Reduced mean time to detect (MTTD) by tuning correlation logic and suppressing false-positive-heavy rules.</li>
-              <li>Built dashboards for OT network visibility across SCADA and industrial control segments.</li>
-              <li>Partnered with incident response to translate raw alerts into actionable, attack-chain-aware tickets.</li>
+              <li>Administered and maintained Guard6 SIEM infrastructure including API Server, Fabric, LPSM, Collectors, and Zabbix monitoring to ensure platform availability and stability.</li>
+              <li>Integrated and onboarded 40+ log sources from OT/ICS devices, industrial networks, cloud platforms, servers, and security appliances.</li>
+              <li>Developed and maintained 18+ custom parsers, normalization rules, field extraction logic, and event enrichment mechanisms improving detection effectiveness.</li>
+              <li>Created, tuned, and maintained 350+ SIEM correlation rules, signatures, and detection use cases across enterprise and industrial environments.</li>
+              <li>Designed custom detection signatures for OT/ICS and industrial network devices not natively supported by the SIEM platform.</li>
+              <li>Built proactive monitoring use cases for Power Grids, Wind Farms, EV Charging Infrastructure, and Nuclear Power Plant operations.</li>
+              <li>Performed vulnerability management using Wiz Cloud Security Platform — reviewing CVEs, compliance gaps, and cloud misconfigurations.</li>
+              <li>Developed Guard6/LogPoint REST API integrations, automation workflows, and a GUI-based billing application integrated with Zuora.</li>
+              <li>Authored 150+ SOPs, playbooks, deployment guides, and technical knowledge articles for platform operations.</li>
             </ul>
           </div>
-          <div class="timeline-toggle">View details</div>
+          <div class="timeline-toggle">▸ View details</div>
         </div>
       </div>
+
       <div class="timeline-item reveal" onclick="toggleTimeline(this)">
         <div class="timeline-dot"></div>
         <div class="timeline-content glass-card">
-          <div class="timeline-date">2021 — 2023</div>
-          <h3 class="timeline-role">SOC Analyst</h3>
-          <div class="timeline-org">Managed Security Services Provider</div>
-          <p class="timeline-summary">Monitored, triaged, and escalated security events across enterprise and OT client environments on a 24/7 SOC rotation.</p>
+          <div class="timeline-date">Nov 2022 — Nov 2024</div>
+          <h3 class="timeline-role">SOC Integration Engineer / SOC Analyst</h3>
+          <div class="timeline-org">SISA Information Security Pvt. Ltd. | Bangalore, India</div>
+          <p class="timeline-summary">Led SIEM integration and SOC operations across enterprise and cloud environments, onboarding clients end-to-end on ELK Stack and ProAct SIEM platforms with hands-on log parsing and detection engineering.</p>
           <div class="timeline-details">
             <ul>
-              <li>Triaged 50+ alerts daily across SIEM and EDR platforms with consistent SLA adherence.</li>
-              <li>Authored playbooks for common alert types, cutting analyst ramp-up time for new hires.</li>
-              <li>Escalated and documented incidents through full lifecycle, from detection to closure.</li>
+              <li>Integrated cloud services (AWS &amp; Azure), network devices, servers, and databases with SIEM solutions while optimizing ELK Stack architecture using Redis, Kafka, and Logstash.</li>
+              <li>Onboarded 4+ enterprise clients from scratch — kickoff calls, device inventories, VPN setup, SIEM configuration, log ingestion, and go-live transitions.</li>
+              <li>Developed custom JRuby Logstash configuration files for effective log parsing and integrated device logs via APIs.</li>
+              <li>Served as primary contact for high-priority CAT-A clients: POC presentations, pre-sales demos, and 24/7 incident support.</li>
+              <li>Fine-tuned noisy use cases and customized reports, maintaining 100+ SOPs and technical documents.</li>
+              <li>Conducted threat hunting, hypothesis testing, and incident response for malware, phishing, and web-based attacks.</li>
+              <li>Researched and compiled monthly vulnerability reports and coordinated simulation activities for high-priority clients.</li>
             </ul>
           </div>
-          <div class="timeline-toggle">View details</div>
+          <div class="timeline-toggle">▸ View details</div>
         </div>
       </div>
-      <div class="timeline-item reveal" onclick="toggleTimeline(this)">
-        <div class="timeline-dot"></div>
-        <div class="timeline-content glass-card">
-          <div class="timeline-date">2020 — 2021</div>
-          <h3 class="timeline-role">IT Security Intern</h3>
-          <div class="timeline-org">Enterprise IT Department</div>
-          <p class="timeline-summary">Supported vulnerability management and log collection pipelines while completing foundational security certifications.</p>
-          <div class="timeline-details">
-            <ul>
-              <li>Assisted in vulnerability scanning and remediation tracking across endpoints and servers.</li>
-              <li>Helped onboard new log sources into the SIEM, validating parsing and field extraction.</li>
-              <li>Earned Security+ and began LogPoint platform training.</li>
-            </ul>
-          </div>
-          <div class="timeline-toggle">View details</div>
-        </div>
-      </div>
+
     </div>
   </div>
 </section>
@@ -170,41 +179,96 @@
 <section id="skills">
   <div class="container">
     <div class="section-header reveal">
-      <div class="section-eyebrow">Toolset</div>
-      <h2 class="section-title">Skills &amp; Technologies</h2>
-      <p class="section-subtitle">Core platforms and disciplines spanning detection engineering, SIEM administration, and OT security.</p>
+      <div class="section-eyebrow">// capabilities.json</div>
+      <h2 class="section-title">Skills &amp; Disciplines</h2>
+      <p class="section-subtitle">Core disciplines spanning SIEM platform engineering, OT/ICS security monitoring, and detection engineering.</p>
     </div>
     <div class="skills-grid">
       <div class="glass-card skill-card reveal tilt-card">
-        <div class="skill-icon">◆</div>
+        <div class="skill-icon">[SIEM]</div>
         <h3>SIEM Engineering</h3>
-        <p>LogPoint, Splunk, correlation rule design, log source onboarding and normalization.</p>
+        <p>Guard6 / LogPoint platform administration, log source onboarding, parser development, field normalization, and correlation rule engineering.</p>
       </div>
       <div class="glass-card skill-card reveal tilt-card">
-        <div class="skill-icon">▲</div>
+        <div class="skill-icon">[DET]</div>
         <h3>Detection Engineering</h3>
-        <p>MITRE ATT&amp;CK mapping, behavioral analytics, alert tuning, false-positive reduction.</p>
+        <p>MITRE ATT&amp;CK / ATT&amp;CK for ICS mapping, behavioral analytics, Sigma rules, alert tuning, and false-positive reduction at scale.</p>
       </div>
       <div class="glass-card skill-card reveal tilt-card">
-        <div class="skill-icon">●</div>
+        <div class="skill-icon">[OT]</div>
         <h3>OT / ICS Security</h3>
-        <p>SCADA network visibility, Guard6 deployment, ICS protocol anomaly detection.</p>
+        <p>Critical infrastructure monitoring for Power Grids, Wind Farms, EV Charging Networks, and Nuclear environments. Industrial protocol anomaly detection.</p>
       </div>
       <div class="glass-card skill-card reveal tilt-card">
-        <div class="skill-icon">■</div>
+        <div class="skill-icon">[LOG]</div>
+        <h3>Log Pipeline Engineering</h3>
+        <p>ELK Stack, Logstash, Kafka, Filebeat, NXLog — end-to-end log collection, parsing, enrichment, and routing pipelines.</p>
+      </div>
+      <div class="glass-card skill-card reveal tilt-card">
+        <div class="skill-icon">[API]</div>
+        <h3>Automation &amp; Integration</h3>
+        <p>Python, Bash, PowerShell automation. REST API integrations, n8n workflows, and custom tooling for SOC efficiency and operational reporting.</p>
+      </div>
+      <div class="glass-card skill-card reveal tilt-card">
+        <div class="skill-icon">[IR]</div>
         <h3>Incident Response</h3>
-        <p>Triage, escalation workflows, playbook authoring, attack-chain reconstruction.</p>
+        <p>Alert triage, escalation workflows, playbook authoring, attack-chain reconstruction, and coordinated incident lifecycle management.</p>
       </div>
-      <div class="glass-card skill-card reveal tilt-card">
-        <div class="skill-icon">◈</div>
-        <h3>Threat Intelligence</h3>
-        <p>IOC enrichment, threat hunting, adversary TTP research and tracking.</p>
-      </div>
-      <div class="glass-card skill-card reveal tilt-card">
-        <div class="skill-icon">◇</div>
-        <h3>Critical Infrastructure</h3>
-        <p>24/7 monitoring posture, segmentation review, resilience-first detection design.</p>
-      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS -->
+<section id="tools">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-eyebrow">// tech_stack.conf</div>
+      <h2 class="section-title">Tools &amp; Technologies</h2>
+      <p class="section-subtitle">Platforms, frameworks, and tooling across SIEM engineering, log pipelines, OT security, and automation.</p>
+    </div>
+    <div class="tools-grid reveal">
+      <!-- SIEM / Guard6 platform -->
+      <span class="tool-chip">LogPoint / Guard6</span>
+      <span class="tool-chip">LogPoint Director</span>
+      <span class="tool-chip">LPSM</span>
+      <span class="tool-chip">API Server</span>
+      <span class="tool-chip">Fabric</span>
+      <span class="tool-chip">LP Standalone Agents</span>
+      <!-- ELK / Log pipeline -->
+      <span class="tool-chip violet">ELK Stack</span>
+      <span class="tool-chip violet">Logstash</span>
+      <span class="tool-chip violet">Elasticsearch</span>
+      <span class="tool-chip violet">Kibana</span>
+      <span class="tool-chip violet">Kafka</span>
+      <span class="tool-chip violet">Redis</span>
+      <span class="tool-chip violet">NXLog</span>
+      <span class="tool-chip violet">Filebeat</span>
+      <!-- Detection / Threat -->
+      <span class="tool-chip">MITRE ATT&amp;CK</span>
+      <span class="tool-chip">MITRE ATT&amp;CK for ICS</span>
+      <span class="tool-chip">Sigma</span>
+      <span class="tool-chip">Wiz Cloud Security</span>
+      <span class="tool-chip">Zabbix</span>
+      <!-- Dev / Automation -->
+      <span class="tool-chip acid">Python</span>
+      <span class="tool-chip acid">Bash</span>
+      <span class="tool-chip acid">PowerShell</span>
+      <span class="tool-chip acid">n8n</span>
+      <span class="tool-chip acid">Docker</span>
+      <span class="tool-chip acid">PostgreSQL</span>
+      <!-- Cloud / Infra -->
+      <span class="tool-chip violet">AWS</span>
+      <span class="tool-chip violet">Azure</span>
+      <span class="tool-chip violet">GCP</span>
+      <span class="tool-chip violet">Linux</span>
+      <!-- OT -->
+      <span class="tool-chip">OT/ICS Security Monitoring</span>
+      <span class="tool-chip">SCADA Integration</span>
+      <span class="tool-chip">Splunk</span>
+      <span class="tool-chip">QRadar (CE)</span>
+      <!-- AI/ML -->
+      <span class="tool-chip acid">Ollama / Mistral</span>
+      <span class="tool-chip acid">LLM Integration</span>
     </div>
   </div>
 </section>
@@ -213,35 +277,66 @@
 <section id="projects">
   <div class="container">
     <div class="section-header reveal">
-      <div class="section-eyebrow">Selected work</div>
+      <div class="section-eyebrow">// selected_work.log</div>
       <h2 class="section-title">Projects</h2>
-      <p class="section-subtitle">A sample of detection engineering and security tooling work.</p>
+      <p class="section-subtitle">Detection engineering, SIEM tooling, and security automation work across enterprise and industrial environments.</p>
     </div>
     <div class="projects-grid">
+
       <div class="glass-card project-card reveal tilt-card">
-        <div class="project-tag">Detection Engineering</div>
-        <h3>ICS Anomaly Detection Ruleset</h3>
-        <p>A library of LogPoint correlation rules mapped to MITRE ATT&amp;CK for ICS, targeting lateral movement and protocol misuse in OT networks.</p>
+        <div class="project-tag">OT/ICS Detection</div>
+        <h3>Critical Infrastructure Detection Ruleset</h3>
+        <p>350+ Guard6/LogPoint correlation rules and custom signatures mapped to MITRE ATT&amp;CK for ICS, covering Power Grids, Wind Farms, EV Charging Networks, and Nuclear Plant operations. Includes custom signatures for industrial devices with no native SIEM support.</p>
         <div class="project-stack">
-          <span>LogPoint</span><span>MITRE ATT&amp;CK</span><span>OT/ICS</span>
+          <span>Guard6</span><span>MITRE ATT&amp;CK for ICS</span><span>OT/ICS</span><span>Sigma</span>
         </div>
       </div>
+
       <div class="glass-card project-card reveal tilt-card">
-        <div class="project-tag">Visibility</div>
-        <h3>Critical Infrastructure Dashboard Suite</h3>
-        <p>Real-time dashboards surfacing SCADA segment health, log source status, and alert volume trends for SOC leadership.</p>
+        <div class="project-tag">Log Pipeline</div>
+        <h3>Custom Parser &amp; Normalization Engine</h3>
+        <p>18+ custom Guard6/LogPoint parsers for industrial network devices, OT appliances, and enterprise systems. Built field extraction logic and event enrichment mechanisms improving log visibility across heterogeneous environments.</p>
         <div class="project-stack">
-          <span>LogPoint</span><span>Dashboards</span><span>SOC Ops</span>
+          <span>LogPoint</span><span>NXLog</span><span>Logstash</span><span>Field Extraction</span>
         </div>
       </div>
+
       <div class="glass-card project-card reveal tilt-card">
         <div class="project-tag">Automation</div>
-        <h3>Alert Triage Playbook Framework</h3>
-        <p>Standardized response playbooks reducing analyst ramp-up time and improving SLA consistency across alert categories.</p>
+        <h3>Log Correlation Engine (n8n + LLM)</h3>
+        <p>Orchestrated log correlation engine using n8n with Filebeat/Fluentd ingestion, Redis/OpenSearch/PostgreSQL backends, and a rule engine (threshold, sequence, pattern) with LLM-based analysis via Ollama/Mistral 7B for automated triage.</p>
         <div class="project-stack">
-          <span>SOAR</span><span>IR Process</span><span>Documentation</span>
+          <span>n8n</span><span>Redis</span><span>PostgreSQL</span><span>Ollama</span><span>Python</span>
         </div>
       </div>
+
+      <div class="glass-card project-card reveal tilt-card">
+        <div class="project-tag">Platform R&amp;D</div>
+        <h3>Guard6 Billing &amp; Ops Automation Suite</h3>
+        <p>GUI-based billing application integrated with Zuora for subscription automation. Also built REST API-driven reporting tools and Python/Bash scripts that reduced manual SOC effort and improved operational efficiency.</p>
+        <div class="project-stack">
+          <span>Python</span><span>Guard6 REST API</span><span>Zuora</span><span>Bash</span>
+        </div>
+      </div>
+
+      <div class="glass-card project-card reveal tilt-card">
+        <div class="project-tag">Lab / Research</div>
+        <h3>QRadar CE Lab with Custom DSM</h3>
+        <p>Full QRadar Community Edition 7.5 lab environment on VirtualBox with static networking, private CA/TLS, port forwarding for external log sources, and custom DSM built for Sysmon EventID normalization and detection.</p>
+        <div class="project-stack">
+          <span>QRadar CE</span><span>Sysmon</span><span>Custom DSM</span><span>VirtualBox</span>
+        </div>
+      </div>
+
+      <div class="glass-card project-card reveal tilt-card">
+        <div class="project-tag">Tooling</div>
+        <h3>IP Reputation Checker &amp; ELK Automation</h3>
+        <p>Flask web app querying VirusTotal and AbuseIPDB APIs for real-time IP reputation scoring. Paired with a shell-based ELK stack automation tool reducing deployment and config time for multi-node clusters.</p>
+        <div class="project-stack">
+          <span>Flask</span><span>VirusTotal API</span><span>AbuseIPDB</span><span>ELK Stack</span><span>Shell</span>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -250,9 +345,9 @@
 <section id="contact">
   <div class="container">
     <div class="section-header reveal">
-      <div class="section-eyebrow">Let's talk</div>
+      <div class="section-eyebrow">// open_channel</div>
       <h2 class="section-title">Get in Touch</h2>
-      <p class="section-subtitle">Open to conversations about detection engineering, OT security, and SOC operations.</p>
+      <p class="section-subtitle">Open to conversations about SIEM engineering, OT/ICS security, detection engineering, and critical infrastructure protection.</p>
     </div>
     <div class="contact-wrap reveal">
       <div class="glass-card contact-form">
@@ -268,7 +363,7 @@
           <label>Message</label>
           <textarea id="contact-msg" rows="4" placeholder="What's on your mind?"></textarea>
         </div>
-        <button class="btn-primary" onclick="handleContact()"><span>Send Message</span></button>
+        <button class="btn-primary" onclick="handleContact()"><span>[ Transmit ]</span></button>
       </div>
     </div>
   </div>
@@ -277,13 +372,13 @@
 <!-- FOOTER -->
 <footer>
   <div class="footer-links">
-    <a href="https://github.com/squzu" target="_blank" class="footer-link">GitHub</a>
-    <a href="https://www.linkedin.com/in/shridharkamath/m" target="_blank" class="footer-link">LinkedIn</a>
-    <a href="mailto:shridhar.kamath@outlook.com" class="footer-link">Email</a>
+    <a href="https://github.com/Squzu" target="_blank" class="footer-link">GitHub</a>
+    <a href="https://linkedin.com/in/shridharkamath" target="_blank" class="footer-link">LinkedIn</a>
+    <a href="mailto:Shridhar.kamath@outlook.com" class="footer-link">Email</a>
     <a href="#" class="footer-link">Resume</a>
   </div>
   <div class="footer-copy">
-    © 2026 Shridhar Kamath &nbsp;·&nbsp; Built with Three.js &amp; vanilla JS
+    © 2026 Shridhar Kamath &nbsp;·&nbsp; SIEM Engineer · Detection Engineer · OT Security
   </div>
 </footer>
 
