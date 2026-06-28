@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shridhar Kamath — Portfolio</title>
+<style>
+  :root {
+    --bg: #050505;
+    --surface: #0d0d0f;
+    --surface2: #141416;
+    --border: rgba(255,255,255,0.08);
+    --border-bright: rgba(255,255,255,0.18);
+    --text-primary: #f2f2f4;
+    --text-secondary: rgba(205,205,212,0.78);
+    --text-muted: rgba(150,150,158,0.7);
+    --accent: #c8c8d0;
+    --silver-grad: linear-gradient(180deg, #ffffff 0%, #e7e7ea 28%, #9a9aa2 55%, #f2f2f4 70%, #cfcfd4 100%);
+    --glow: rgba(255,255,255,0.06);
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ---- BACKGROUND fluid canvas ---- */
+  #bg-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.38;
+  }
+
+  /* ---- Mouse spotlight ---- */
+  #spotlight {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ---- BACKGROUND noise grain ---- */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* ---- Cursor orb ---- */
+  #cursor-orb {
+    position: fixed;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.9);
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    mix-blend-mode: overlay;
+    opacity: 0;
+    transition: opacity 0.3s ease, width 0.2s ease, height 0.2s ease;
+  }
+
+  #cursor-trail {
+    position: fixed;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.25);
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  /* ---- NAV ---- */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 48px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(5,5,5,0.72);
+    backdrop-filter: blur(18px);
+  }
+
+  .nav-logo {
+    font-size: 13px;
+    letter-spacing: 0.45em;
+    text-transform: uppercase;
+    background: var(--silver-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 700;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text-primary); }
+
+  .nav-contact {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+
+  /* ---- MAIN WRAPPER ---- */
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 40px 120px;
+  }
+
+  /* ---- HERO ---- */
+  .hero {
+    padding-top: 140px;
+    padding-bottom: 100px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.6em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+  }
+
+  .hero-name {
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    line-height: 0.95;
+    background: var(--silver-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .hero-title {
+    font-size: clamp(16px, 2.5vw, 22px);
+    font-weight: 400;
+    letter-spacing: 0.28em;
+    color: rgba(190,190,200,0.65);
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .hero-summary {
+    max-width: 640px;
+    font-size: 16px;
+    line-height: 1.75;
+    color: var(--text-secondary);
+    margin-bottom: 40px;
+  }
+
+  .hero-links {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .pill-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 100px;
+    border: 1px solid var(--border-bright);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-secondary);
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+  }
+
+  .pill-link:hover {
+    border-color: rgba(255,255,255,0.45);
+    background: rgba(255,255,255,0.08);
+    color: var(--text-primary);
+  }
+
+  .pill-link svg {
+    width: 14px; height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* ---- SECTIONS ---- */
+  section {
+    padding: 80px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 0.55em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 48px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.12), transparent);
+  }
+
+  /* ---- EXPERIENCE CARDS ---- */
+  .exp-card {
+    position: relative;
+    padding: 32px 36px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--surface);
+    margin-bottom: 20px;
+    transition: border-color 0.3s, background 0.3s;
+    overflow: hidden;
+  }
+
+  .exp-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  }
+
+  .exp-card:hover {
+    border-color: rgba(255,255,255,0.16);
+    background: var(--surface2);
+  }
+
+  .exp-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 20px;
+  }
+
+  .exp-company-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 6px;
+  }
+
+  /* Company logo circles */
+  .logo-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    border: 1px solid var(--border-bright);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+    background: rgba(255,255,255,0.04);
+  }
+
+  .logo-circle img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    filter: brightness(0) invert(1) opacity(0.88);
+  }
+
+  /* SVG inline logos */
+  .logo-circle svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .exp-company {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.01em;
+  }
+
+  .exp-role {
+    font-size: 13px;
+    color: var(--text-muted);
+    letter-spacing: 0.03em;
+    margin-bottom: 4px;
+  }
+
+  .exp-period {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 5px 12px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .exp-highlights {
+    list-style: none;
+    margin-top: 4px;
+  }
+
+  .exp-highlights li {
+    position: relative;
+    padding-left: 18px;
+    margin-bottom: 9px;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--text-secondary);
+  }
+
+  .exp-highlights li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--text-muted);
+    font-size: 11px;
+    top: 3px;
+  }
+
+  /* Impact numbers row */
+  .exp-stats {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .stat-num {
+    font-size: 22px;
+    font-weight: 700;
+    background: var(--silver-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* ---- SKILLS GRID ---- */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .skill-group {
+    padding: 20px 22px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    transition: border-color 0.25s;
+  }
+
+  .skill-group:hover {
+    border-color: rgba(255,255,255,0.16);
+  }
+
+  .skill-group-label {
+    font-size: 10px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tag {
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3px 9px;
+    letter-spacing: 0.02em;
+  }
+
+  /* ---- PROJECTS ---- */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .project-card {
+    padding: 26px 28px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface);
+    transition: border-color 0.25s, background 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  }
+
+  .project-card:hover {
+    border-color: rgba(255,255,255,0.16);
+    background: var(--surface2);
+  }
+
+  .project-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .project-desc {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+  }
+
+  .project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .tech-tag {
+    font-size: 11px;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 2px 7px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ---- CERTIFICATIONS ---- */
+  .certs-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 10px;
+  }
+
+  .cert-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    font-size: 13px;
+    color: var(--text-secondary);
+    transition: border-color 0.2s;
+  }
+
+  .cert-item:hover { border-color: rgba(255,255,255,0.16); }
+
+  .cert-year {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.05);
+    border-radius: 5px;
+    padding: 2px 7px;
+    flex-shrink: 0;
+  }
+
+  /* ---- AWARDS ---- */
+  .awards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .award-item {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    padding: 22px 28px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+  }
+
+  .award-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.07);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+
+  .award-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  .award-org {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  /* ---- FOOTER ---- */
+  footer {
+    position: relative;
+    z-index: 1;
+    padding: 60px 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  .footer-name {
+    font-size: 12px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    background: var(--silver-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 700;
+  }
+
+  .footer-contact {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .footer-contact a {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-contact a:hover { color: var(--text-primary); }
+
+  /* ---- SCROLL ANIMATIONS ---- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.65s ease, transform 0.65s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ---- MOBILE ---- */
+  @media (max-width: 640px) {
+    nav { padding: 16px 20px; }
+    .nav-links, .nav-contact { display: none; }
+    main { padding: 0 20px 80px; }
+    .hero { padding-top: 100px; padding-bottom: 60px; }
+    footer { padding: 40px 20px; }
+    .exp-header { flex-direction: column; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+
+  /* ---- Card mouse-follow shimmer ---- */
+  .exp-card, .skill-group, .project-card, .cert-item, .award-item {
+    --cx: 50%;
+    --cy: 50%;
+  }
+
+  .exp-card.card-lit,
+  .skill-group.card-lit,
+  .project-card.card-lit {
+    border-color: rgba(255,255,255,0.22) !important;
+    background-image: radial-gradient(
+      280px circle at var(--cx) var(--cy),
+      rgba(255,255,255,0.05) 0%,
+      transparent 70%
+    );
+  }
+
+  .cert-item.card-lit,
+  .award-item.card-lit {
+    border-color: rgba(255,255,255,0.2) !important;
+    background-image: radial-gradient(
+      200px circle at var(--cx) var(--cy),
+      rgba(255,255,255,0.04) 0%,
+      transparent 70%
+    );
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div id="spotlight"></div>
+<div id="cursor-orb"></div>
+<div id="cursor-trail"></div>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">SK</span>
+  <ul class="nav-links">
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#certifications">Certs</a></li>
+  </ul>
+  <span class="nav-contact">Shridhar.kamath@outlook.com</span>
+</nav>
+
+<main>
+
+  <!-- HERO -->
+  <div class="hero reveal">
+    <p class="hero-eyebrow">Cybersecurity Portfolio</p>
+    <h1 class="hero-name">Shridhar<br>Kamath</h1>
+    <p class="hero-title">SIEM Engineer &nbsp;·&nbsp; Detection Engineering &nbsp;·&nbsp; OT/ICS Security</p>
+    <p class="hero-summary">
+      Cybersecurity professional with 3+ years of hands-on experience in SIEM integration, detection engineering,
+      and SOC operations. Currently building enterprise-grade security monitoring for critical infrastructure
+      — power grids, wind farms, EV networks, and nuclear environments — at Siemens Technology and Services.
+    </p>
+    <div class="hero-links">
+      <a class="pill-link" href="mailto:Shridhar.kamath@outlook.com">
+        <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
+        Email
+      </a>
+      <a class="pill-link" href="https://linkedin.com/in/shridharkamath/" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        LinkedIn
+      </a>
+      <a class="pill-link" href="https://github.com/Squzu" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        GitHub
+      </a>
+      <a class="pill-link" href="tel:+917760247077">
+        <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.06 6.06l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        +91 7760247077
+      </a>
+    </div>
+  </div>
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="section-label">Experience</div>
+
+    <!-- Siemens -->
+    <div class="exp-card reveal">
+      <div class="exp-header">
+        <div>
+          <div class="exp-company-row">
+            <div class="logo-circle">
+              <!-- Siemens logo SVG -->
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="24" height="24" rx="0" fill="none"/>
+                <text x="2" y="17" font-size="13" font-weight="900" fill="rgba(255,255,255,0.88)" font-family="Arial,sans-serif" letter-spacing="-1">S</text>
+                <!-- Siemens wordmark approximation using geometric shapes -->
+                <rect x="1" y="10" width="22" height="3.5" rx="1.75" fill="rgba(255,255,255,0.82)"/>
+              </svg>
+            </div>
+            <span class="exp-company">Siemens Technology and Services</span>
+          </div>
+          <div class="exp-role">Cybersecurity Engineer — SIEM, Detection Engineering &amp; Platform R&amp;D</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Bangalore, India</div>
+        </div>
+        <span class="exp-period">Dec 2024 — Present</span>
+      </div>
+
+      <ul class="exp-highlights">
+        <li>Administered and maintained the <strong>Guard6 SIEM platform</strong> (formerly LogPoint) for enterprise and critical infrastructure security monitoring across 8+ enterprise customers.</li>
+        <li>Managed core Guard6 infrastructure: API Server, Fabric, LPSM, Collectors, and Zabbix monitoring to ensure platform availability and stability.</li>
+        <li>Supported security monitoring for <strong>Power Grids, Wind Farms, Large-Scale EV Charging Networks, and Nuclear Power Plant</strong> environments.</li>
+        <li>Integrated and onboarded <strong>40+ log sources</strong> from OT/ICS devices, industrial network infrastructure, cloud platforms, servers, and security appliances.</li>
+        <li>Developed and maintained <strong>18+ custom parsers</strong>, normalization rules, field extraction logic, and event enrichment mechanisms.</li>
+        <li>Created, tuned, and maintained <strong>350+ SIEM correlation rules</strong> and detection use cases across enterprise and industrial environments.</li>
+        <li>Developed custom detection signatures for OT/ICS and industrial network devices not natively supported by the SIEM platform.</li>
+        <li>Performed vulnerability management using <strong>Wiz Cloud Security Platform</strong>, reviewing CVEs, compliance gaps, and cloud misconfigurations.</li>
+        <li>Utilized Guard6/LogPoint REST APIs to develop custom integrations, automation workflows, and operational reporting tools.</li>
+        <li>Developed a GUI-based <strong>billing application integrated with Zuora</strong> to automate subscription and billing operations.</li>
+        <li>Built automation solutions using Python, Bash, and PowerShell, reducing manual SOC effort and improving operational efficiency.</li>
+        <li>Authored and maintained <strong>150+ SOPs</strong>, playbooks, deployment guides, and technical knowledge articles.</li>
+      </ul>
+
+      <div class="exp-stats">
+        <div class="stat-item">
+          <span class="stat-num">350+</span>
+          <span class="stat-label">Detection Rules</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">40+</span>
+          <span class="stat-label">Log Sources</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">18+</span>
+          <span class="stat-label">Custom Parsers</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">8+</span>
+          <span class="stat-label">Enterprise Clients</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">150+</span>
+          <span class="stat-label">SOPs & Playbooks</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SISA -->
+    <div class="exp-card reveal">
+      <div class="exp-header">
+        <div>
+          <div class="exp-company-row">
+            <div class="logo-circle">
+              <!-- SISA shield-style icon -->
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L4 6v6c0 5 3.5 9.3 8 10.5C16.5 21.3 20 17 20 12V6L12 2z" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.7)" stroke-width="1.5"/>
+                <path d="M9 12l2 2 4-4" stroke="rgba(255,255,255,0.85)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span class="exp-company">SISA Information Security</span>
+          </div>
+          <div class="exp-role">SOC Integration / SOC Analyst</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Bangalore, India</div>
+        </div>
+        <span class="exp-period">Nov 2022 — Nov 2024</span>
+      </div>
+
+      <ul class="exp-highlights">
+        <li>Integrated cloud services (AWS &amp; Azure), network devices, servers, and databases with SIEM solutions while optimizing ELK Stack architecture.</li>
+        <li>Onboarded <strong>four clients from scratch</strong> — kickoff calls, device inventories, VPN setup, SIEM configuration, log ingestion, and go-live transition.</li>
+        <li>Served as main contact for <strong>high-priority CAT-A clients</strong>, providing POC presentations and conducting pre-sales demos.</li>
+        <li>Developed custom JRuby configuration files in Logstash for effective log parsing, integrated device logs via APIs, and created bash scripts for automating endpoint agent installations.</li>
+        <li>Used Redis for efficient memory buffering and Salt Stack for automating server health checks, manually configuring Parser, Forwarder, and Elasticsearch components from scratch.</li>
+        <li>Fine-tuned noisy use cases and customized reports; maintained <strong>100+ SOPs</strong> and technical documents for smoother operations.</li>
+        <li>Analyzed cyberattacks including malware, phishing, and web threats — conducted threat hunting and hypothesis testing.</li>
+        <li>Coordinated simulation activities for high-priority clients to ensure readiness for potential security incidents.</li>
+      </ul>
+
+      <div class="exp-stats">
+        <div class="stat-item">
+          <span class="stat-num">4</span>
+          <span class="stat-label">Clients Onboarded</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">100+</span>
+          <span class="stat-label">SOPs Maintained</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">3</span>
+          <span class="stat-label">SIEM Platforms</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="section-label">Technical Competencies</div>
+    <div class="skills-grid">
+      <div class="skill-group reveal">
+        <div class="skill-group-label">SIEM Platforms</div>
+        <div class="skill-tags">
+          <span class="tag">LogPoint / Guard6</span>
+          <span class="tag">ELK Stack</span>
+          <span class="tag">Splunk</span>
+          <span class="tag">ProAct (SISA)</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-label">Data Pipeline</div>
+        <div class="skill-tags">
+          <span class="tag">Logstash</span>
+          <span class="tag">Kafka</span>
+          <span class="tag">Redis</span>
+          <span class="tag">NXLog</span>
+          <span class="tag">Elasticsearch</span>
+          <span class="tag">Kibana</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-label">Cloud &amp; Infra</div>
+        <div class="skill-tags">
+          <span class="tag">AWS</span>
+          <span class="tag">Azure</span>
+          <span class="tag">GCP</span>
+          <span class="tag">Docker</span>
+          <span class="tag">VMware</span>
+          <span class="tag">Zabbix</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-label">Detection &amp; Threat</div>
+        <div class="skill-tags">
+          <span class="tag">MITRE ATT&amp;CK</span>
+          <span class="tag">Sigma</span>
+          <span class="tag">Threat Hunting</span>
+          <span class="tag">Incident Response</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-label">OT/ICS Security</div>
+        <div class="skill-tags">
+          <span class="tag">OT Monitoring</span>
+          <span class="tag">ICS Detection</span>
+          <span class="tag">Power Grid</span>
+          <span class="tag">Wind Farm</span>
+          <span class="tag">Nuclear</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-label">Red Teaming / VAPT</div>
+        <div class="skill-tags">
+          <span class="tag">Kali Linux</span>
+          <span class="tag">Metasploit</span>
+          <span class="tag">Burp Suite</span>
+          <span class="tag">Nessus</span>
+          <span class="tag">OWASP</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-label">Programming</div>
+        <div class="skill-tags">
+          <span class="tag">Python</span>
+          <span class="tag">Bash</span>
+          <span class="tag">PowerShell</span>
+          <span class="tag">Java</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag">C/C++</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-label">AI &amp; Automation</div>
+        <div class="skill-tags">
+          <span class="tag">Ollama (LLaMA, Gemma)</span>
+          <span class="tag">n8n</span>
+          <span class="tag">PostgreSQL</span>
+          <span class="tag">LLM Integration</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <div class="skill-group-label">Tools &amp; Platforms</div>
+        <div class="skill-tags">
+          <span class="tag">Wiz</span>
+          <span class="tag">LogPoint Director</span>
+          <span class="tag">Jira</span>
+          <span class="tag">Azure DevOps</span>
+          <span class="tag">ServiceNow</span>
+          <span class="tag">Palo Alto XSOAR</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-label">Personal Projects</div>
+    <div class="projects-grid">
+      <div class="project-card reveal">
+        <div class="project-name">ELK_Automation</div>
+        <div class="project-desc">Shell-based automation tool for the ELK stack — enhancing setup efficiency and streamlining deployment processes from scratch.</div>
+        <div class="project-tech">
+          <span class="tech-tag">Shell</span>
+          <span class="tech-tag">Elasticsearch</span>
+          <span class="tech-tag">Logstash</span>
+          <span class="tech-tag">Kibana</span>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-name">IP-ReputationChecker</div>
+        <div class="project-desc">Flask web application checking IP address reputation using VirusTotal and AbuseIPDB APIs, aiding in real-time cybersecurity threat assessment.</div>
+        <div class="project-tech">
+          <span class="tech-tag">Flask</span>
+          <span class="tech-tag">Python</span>
+          <span class="tech-tag">VirusTotal API</span>
+          <span class="tech-tag">AbuseIPDB</span>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-name">ffuf_automation_scan</div>
+        <div class="project-desc">Automated ffuf scan runner to discover hidden files and directories, reducing scan time by 20–30% through intelligent parallelism and output handling.</div>
+        <div class="project-tech">
+          <span class="tech-tag">Bash</span>
+          <span class="tech-tag">ffuf</span>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-name">Tom-9-Upload</div>
+        <div class="project-desc">Automated script generating and uploading WAR payloads to Tomcat 9 for penetration testing, triggering reverse shell connections via msfvenom.</div>
+        <div class="project-tech">
+          <span class="tech-tag">Shell</span>
+          <span class="tech-tag">msfvenom</span>
+          <span class="tech-tag">Tomcat 9</span>
+        </div>
+      </div>
+      <div class="project-card reveal">
+        <div class="project-name">Port-Knocker OSCP</div>
+        <div class="project-desc">Bash script for port knocking on specified IPs with all possible permutations — built for OSCP-style penetration testing scenarios.</div>
+        <div class="project-tech">
+          <span class="tech-tag">Bash</span>
+          <span class="tech-tag">Networking</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CERTIFICATIONS -->
+  <section id="certifications">
+    <div class="section-label">Certifications</div>
+    <div class="certs-list">
+      <div class="cert-item reveal"><span class="cert-year">2024</span>Practical Ethical Hacking — TCM Security</div>
+      <div class="cert-item reveal"><span class="cert-year">2024</span>Multicloud Network Associate — Aviatrix</div>
+      <div class="cert-item reveal"><span class="cert-year">2024</span>Ethical Hacking Essentials — EC-Council</div>
+      <div class="cert-item reveal"><span class="cert-year">2024</span>Network Defense Essentials — EC-Council</div>
+      <div class="cert-item reveal"><span class="cert-year">2024</span>Beginner's Guide to sqlmap — Cybr</div>
+      <div class="cert-item reveal"><span class="cert-year">2024</span>Injection Attacks — Cybr</div>
+      <div class="cert-item reveal"><span class="cert-year">2024</span>Introduction to OS Command Injections — Cybr</div>
+      <div class="cert-item reveal"><span class="cert-year">2022</span>Network Security Associate NSE1 &amp; NSE2 — Fortinet</div>
+      <div class="cert-item reveal"><span class="cert-year">2022</span>Kali Linux Fundamentals — Cybrary</div>
+      <div class="cert-item reveal"><span class="cert-year">2022</span>ABC of Malware — SOC Experts</div>
+      <div class="cert-item reveal"><span class="cert-year">2022</span>SOC Expert Certified Security Analyst</div>
+      <div class="cert-item reveal"><span class="cert-year">2022</span>Palo Alto Networks XSOAR</div>
+      <div class="cert-item reveal"><span class="cert-year">2018</span>CEH v8 — GIT Institute</div>
+      <div class="cert-item reveal"><span class="cert-year">2018</span>CCNS (RS) — GIT Institute Hubli</div>
+      <div class="cert-item reveal"><span class="cert-year">2018</span>Certified Field Technician — ESSC India</div>
+      <div class="cert-item reveal"><span class="cert-year">2018</span>Hardware and Networking — GIT Institute Hubli</div>
+    </div>
+  </section>
+
+  <!-- AWARDS -->
+  <section id="awards">
+    <div class="section-label">Awards</div>
+    <div class="awards-list">
+      <div class="award-item reveal">
+        <div class="award-icon">★</div>
+        <div>
+          <div class="award-org">SISA Infosec</div>
+          <div class="award-text">Awarded for exceptional handling of multiple CAT-A client relationships — recognized for consistently exceeding client expectations with 24/7 availability.</div>
+        </div>
+      </div>
+      <div class="award-item reveal">
+        <div class="award-icon">◈</div>
+        <div>
+          <div class="award-org">SISA Infosec</div>
+          <div class="award-text">Recognized for successfully conducting a Proof of Concept (POC) on Splunk and ProAct SIEM tools, demonstrating platform capabilities to enterprise clients.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDUCATION -->
+  <section>
+    <div class="section-label">Education</div>
+    <div class="exp-card reveal" style="max-width:520px;">
+      <div class="exp-header" style="margin-bottom:0;">
+        <div>
+          <div class="exp-company">Bachelor of Computer Applications</div>
+          <div class="exp-role">Global College of IT and Management, Hubli</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Karnataka University · Hubli, Karnataka, India</div>
+        </div>
+        <span class="exp-period">2021</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-contact">
+    <a href="mailto:Shridhar.kamath@outlook.com">Shridhar.kamath@outlook.com</a>
+    <a href="https://linkedin.com/in/shridharkamath/" target="_blank">LinkedIn</a>
+    <a href="https://github.com/Squzu" target="_blank">GitHub</a>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   FLUID SATIN BACKGROUND — same WebGL as landing page
+   ========================================================= */
+(function() {
+  const canvas = document.getElementById('bg-canvas');
+  const gl = canvas.getContext('webgl', {antialias:false, alpha:false}) ||
+             canvas.getContext('experimental-webgl', {antialias:false, alpha:false});
+
+  let W, H;
+  const RENDER_SCALE = 0.35;
+
+  function resize(){
+    const DPR = Math.min(window.devicePixelRatio || 1, 1.3);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = Math.max(100, Math.round(W * DPR * RENDER_SCALE));
+    canvas.height = Math.max(100, Math.round(H * DPR * RENDER_SCALE));
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    if(gl) gl.viewport(0, 0, canvas.width, canvas.height);
+  }
+
+  if(!gl) {
+    canvas.style.background = '#050505';
+    return;
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+
+  const vertSrc = `
+    attribute vec2 aPos;
+    void main(){ gl_Position = vec4(aPos, 0.0, 1.0); }
+  `;
+
+  const fragSrc = `
+    precision highp float;
+    uniform vec2 uRes;
+    uniform float uTime;
+    uniform vec2 uMouse;
+
+    vec2 hash2(vec2 p){
+      p = vec2(dot(p, vec2(127.1,311.7)), dot(p, vec2(269.5,183.3)));
+      return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
+    }
+    float noise(vec2 p){
+      vec2 i = floor(p); vec2 f = fract(p);
+      vec2 u = f*f*(3.0-2.0*f);
+      float a = dot(hash2(i+vec2(0,0)),f-vec2(0,0));
+      float b = dot(hash2(i+vec2(1,0)),f-vec2(1,0));
+      float c = dot(hash2(i+vec2(0,1)),f-vec2(0,1));
+      float d = dot(hash2(i+vec2(1,1)),f-vec2(1,1));
+      return mix(mix(a,b,u.x),mix(c,d,u.x),u.y);
+    }
+    float fbm(vec2 p, int oct){
+      float v=0.,amp=0.5,freq=1.,sum=0.;
+      for(int i=0;i<6;i++){
+        if(i>=oct) break;
+        v += noise(p*freq)*amp; sum+=amp; amp*=0.55; freq*=2.;
+      }
+      return v/sum;
+    }
+    void main(){
+      vec2 uv = gl_FragCoord.xy/uRes;
+      float asp = uRes.x/uRes.y;
+      vec2 nuv = vec2(uv.x*asp, uv.y);
+      float t = uTime;
+      vec2 m = vec2(uMouse.x*asp, uMouse.y);
+      float wx = fbm(nuv*0.55+vec2(t*0.4,t*0.28),2);
+      float wy = fbm(nuv*0.55+vec2(7.1+t*0.32,2.3+t*0.24),2);
+      vec2 md = nuv - m;
+      float mf = exp(-dot(md,md)*7.0);
+      vec2 wuv = nuv + vec2(wx,wy)*0.85 + md*mf*0.5;
+      float ca=cos(-0.42), sa=sin(-0.42);
+      float along = wuv.x*ca+wuv.y*sa;
+      float across = -wuv.x*sa+wuv.y*ca;
+      float fw = fbm(wuv*1.8+vec2(t*0.5,t*0.36),2)*0.18;
+      float ridge = sin((across+fw)*9.5+sin(along*1.3+t*0.6)*0.9);
+      float bodyN = fbm(wuv*0.6+vec2(t*0.15,t*0.11),2);
+      float body = pow(max(0.,(.5+bodyN*.5)),2.)*0.46;
+      float line = pow(max(0.,1.-abs(ridge)/0.16),2.);
+      float gate = max(0.15, fbm(nuv*0.5+vec2(19.+t*0.05,31.+t*0.04),1)*0.5+0.75);
+      float v = clamp(body*0.667+line*gate, 0., 1.);
+      gl_FragColor = vec4(v,v,v,1.0);
+    }
+  `;
+
+  function makeShader(type, src){
+    const sh = gl.createShader(type);
+    gl.shaderSource(sh, src);
+    gl.compileShader(sh);
+    return sh;
+  }
+
+  const prog = gl.createProgram();
+  gl.attachShader(prog, makeShader(gl.VERTEX_SHADER, vertSrc));
+  gl.attachShader(prog, makeShader(gl.FRAGMENT_SHADER, fragSrc));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+  const aPos = gl.getAttribLocation(prog, 'aPos');
+  gl.enableVertexAttribArray(aPos);
+  gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+  const uRes = gl.getUniformLocation(prog, 'uRes');
+  const uTime = gl.getUniformLocation(prog, 'uTime');
+  const uMouse = gl.getUniformLocation(prog, 'uMouse');
+
+  let mouse = {x:0.5, y:0.5}, smooth = {x:0.5, y:0.5};
+
+  window.addEventListener('mousemove', e => {
+    mouse.x = e.clientX / window.innerWidth;
+    mouse.y = 1 - e.clientY / window.innerHeight;
+  });
+  window.addEventListener('touchmove', e => {
+    if(e.touches[0]) {
+      mouse.x = e.touches[0].clientX / window.innerWidth;
+      mouse.y = 1 - e.touches[0].clientY / window.innerHeight;
+    }
+  }, {passive:true});
+
+  // Expose mouse for spotlight
+  window._bgMouse = mouse;
+  window._bgSmooth = smooth;
+
+  const t0 = performance.now();
+  function render(now){
+    smooth.x += (mouse.x - smooth.x) * 0.04;
+    smooth.y += (mouse.y - smooth.y) * 0.04;
+    const t = (now - t0) * 0.000032;
+    gl.uniform2f(uRes, canvas.width, canvas.height);
+    gl.uniform1f(uTime, t);
+    gl.uniform2f(uMouse, smooth.x, smooth.y);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
+})();
+
+/* =========================================================
+   SPOTLIGHT + CURSOR ORB — mouse-reactive overlay
+   ========================================================= */
+(function() {
+  const spotlight = document.getElementById('spotlight');
+  const orb = document.getElementById('cursor-orb');
+  const trail = document.getElementById('cursor-trail');
+
+  let mx = window.innerWidth/2, my = window.innerHeight/2;
+  let ox = mx, oy = my;   // orb pos (instant)
+  let tx = mx, ty = my;   // trail pos (lagged)
+  let rafId;
+
+  function onMove(cx, cy) {
+    mx = cx; my = cy;
+    orb.style.opacity = '1';
+    trail.style.opacity = '1';
+    // Spotlight via CSS custom props
+    spotlight.style.background =
+      `radial-gradient(650px circle at ${cx}px ${cy}px,
+        rgba(255,255,255,0.052) 0%,
+        rgba(255,255,255,0.016) 35%,
+        transparent 70%)`;
+  }
+
+  window.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
+  window.addEventListener('touchmove', e => {
+    if(e.touches[0]) onMove(e.touches[0].clientX, e.touches[0].clientY);
+  }, {passive:true});
+
+  window.addEventListener('mouseleave', () => {
+    orb.style.opacity = '0';
+    trail.style.opacity = '0';
+  });
+
+  // Card shimmer — highlight cards under cursor
+  const cards = document.querySelectorAll('.exp-card, .skill-group, .project-card, .cert-item, .award-item');
+  cards.forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width * 100).toFixed(1);
+      const y = ((e.clientY - r.top) / r.height * 100).toFixed(1);
+      card.style.setProperty('--cx', x + '%');
+      card.style.setProperty('--cy', y + '%');
+      card.classList.add('card-lit');
+    });
+    card.addEventListener('mouseleave', () => card.classList.remove('card-lit'));
+  });
+
+  function tick() {
+    // Orb follows instantly
+    ox += (mx - ox) * 0.88;
+    oy += (my - oy) * 0.88;
+    orb.style.left = ox + 'px';
+    orb.style.top  = oy + 'px';
+
+    // Trail lags
+    tx += (mx - tx) * 0.12;
+    ty += (my - ty) * 0.12;
+    trail.style.left = tx + 'px';
+    trail.style.top  = ty + 'px';
+
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+/* =========================================================
+   SCROLL REVEALS
+   ========================================================= */
+const reveals = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'),
+        entry.target.dataset.delay || 0);
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.skills-grid, .projects-grid, .certs-list, .awards-list').forEach(parent => {
+  parent.querySelectorAll('.reveal').forEach((el, i) => { el.dataset.delay = i * 60; });
+});
+
+reveals.forEach(el => revealObserver.observe(el));
+</script>
+
+</body>
+</html>
