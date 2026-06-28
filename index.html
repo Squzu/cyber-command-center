@@ -795,9 +795,7 @@ function startHackTransition(){
           bsod.style.opacity = '0';
 
           setTimeout(()=>{
-            nextStub.style.transition = 'opacity 0.4s ease';
-            nextStub.style.opacity = '1';
-            nextStub.style.pointerEvents = 'auto';
+             window.location.href = 'portfolio.html';  // ← ADD this
           }, 350);
         }, 1300);
 
