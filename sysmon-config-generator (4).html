@@ -1,0 +1,1512 @@
+<!--
+  Sysmon Config Generator
+  Built by Shridhar Kamath, using Claude (Anthropic).
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SYSMON.CFG // config generator</title>
+<style>
+:root{
+  --bg:#060907;
+  --panel:#0a120d;
+  --panel-2:#0d1712;
+  --panel-3:#0a1310;
+  --green:#3dff5e;
+  --green-dim:#1c8f34;
+  --green-faint:rgba(61,255,94,0.12);
+  --amber:#ffb703;
+  --red:#ff4d4d;
+  --grey:#5a7a62;
+  --text:#c9f5cf;
+  --text-dim:#6f9c78;
+  --border:rgba(61,255,94,0.22);
+  --mono:'JetBrains Mono','Fira Code',Consolas,Menlo,monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--mono);}
+body{
+  min-height:100vh;
+  background-image:
+    radial-gradient(ellipse at top left, rgba(61,255,94,0.05), transparent 60%),
+    radial-gradient(ellipse at bottom right, rgba(61,255,94,0.04), transparent 55%);
+  position:relative;
+  overflow-x:hidden;
+}
+body::after{
+  content:"";
+  position:fixed; inset:0; pointer-events:none; z-index:50;
+  background:repeating-linear-gradient(0deg, rgba(0,0,0,0.12) 0px, rgba(0,0,0,0.12) 1px, transparent 1px, transparent 3px);
+  mix-blend-mode:multiply;
+  opacity:0.35;
+}
+@keyframes flicker{
+  0%,100%{opacity:1;} 92%{opacity:1;} 93%{opacity:0.85;} 94%{opacity:1;} 96%{opacity:0.92;} 97%{opacity:1;}
+}
+.wrap{animation:flicker 7s infinite;}
+
+/* ---------- header ---------- */
+header{
+  border-bottom:1px solid var(--border);
+  padding:22px 28px 18px;
+  background:linear-gradient(180deg, rgba(61,255,94,0.05), transparent);
+}
+.brand{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;}
+.brand h1{
+  margin:0; font-size:20px; letter-spacing:3px; font-weight:700;
+  color:var(--green); text-shadow:0 0 8px rgba(61,255,94,0.55), 0 0 18px rgba(61,255,94,0.25);
+}
+.brand .cursor{display:inline-block; width:9px; height:16px; background:var(--green); box-shadow:0 0 8px var(--green); animation:blink 1.1s steps(1) infinite; vertical-align:-2px;}
+@keyframes blink{50%{opacity:0;}}
+.brand .sub{color:var(--text-dim); font-size:12px; letter-spacing:1px;}
+.pathline{margin-top:6px; color:var(--text-dim); font-size:11px; letter-spacing:0.5px;}
+.pathline span{color:var(--green-dim);}
+#builderTop, #communitySection, #deploySection{scroll-margin-top:52px;}
+
+/* ---------- quick nav (always-visible link to deployment steps) ---------- */
+.quicknav{
+  position:sticky; top:0; z-index:40;
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  padding:9px 28px; background:#04140a; border-bottom:1px solid var(--border);
+  box-shadow:0 2px 12px rgba(0,0,0,0.4);
+}
+.quicknav-label{font-size:10px; color:var(--text-dim); letter-spacing:1.5px; text-transform:uppercase; flex-shrink:0;}
+.quicknav a{
+  font-size:11px; color:var(--text-dim); text-decoration:none; letter-spacing:0.5px;
+  border-bottom:1px dashed transparent; padding:2px 0;
+}
+.quicknav a:hover{color:var(--green); border-color:var(--green);}
+.quicknav a.quicknav-highlight{
+  color:var(--amber); font-weight:700; border:1px solid var(--amber); border-radius:2px; padding:4px 10px;
+  margin-left:auto; animation:pulseGlow 2.5s infinite;
+}
+.quicknav a.quicknav-highlight:hover{background:rgba(255,183,3,0.12);}
+@keyframes pulseGlow{
+  0%,100%{box-shadow:0 0 0 rgba(255,183,3,0);}
+  50%{box-shadow:0 0 10px rgba(255,183,3,0.5);}
+}
+
+/* ---------- layout ---------- */
+.grid{display:grid; grid-template-columns:340px 1fr 380px; gap:0;}
+@media(max-width:1180px){.grid{grid-template-columns:1fr; }}
+.col{border-right:1px solid var(--border); padding:18px;}
+.col:last-child{border-right:none;}
+.col h2{
+  font-size:11px; letter-spacing:2.5px; color:var(--green); margin:0 0 14px;
+  display:flex; align-items:center; gap:8px; text-transform:uppercase;
+}
+.col h2::before{content:"■"; font-size:9px; color:var(--green-dim);}
+
+/* ---------- import bar ---------- */
+.import-box{border:1px solid var(--border); background:var(--panel-2); border-radius:3px; padding:12px; margin-bottom:20px;}
+.import-desc{font-size:10.5px; color:var(--text-dim); line-height:1.5; margin-bottom:8px;}
+.import-btn{
+  width:100%; background:transparent; border:1px solid var(--green); color:var(--green); cursor:pointer;
+  font-family:var(--mono); font-size:11px; letter-spacing:1px; padding:9px; border-radius:2px;
+}
+.import-btn:hover{background:var(--green-faint);}
+.import-status{font-size:10.5px; margin-top:8px; min-height:14px;}
+.import-status.ok{color:var(--green);}
+.import-status.err{color:var(--red);}
+
+/* ---------- preset bar ---------- */
+.presets{display:flex; flex-direction:column; gap:8px; margin-bottom:20px;}
+.preset-btn{
+  background:var(--panel-2); border:1px solid var(--border); color:var(--text);
+  text-align:left; padding:10px 12px; font-family:var(--mono); font-size:12px; cursor:pointer;
+  border-radius:2px; transition:.15s; position:relative;
+}
+.preset-btn:hover{border-color:var(--green); background:var(--green-faint); color:var(--green);}
+.preset-btn .desc{display:block; color:var(--text-dim); font-size:10.5px; margin-top:3px;}
+.preset-btn:hover .desc{color:var(--green-dim);}
+
+/* ---------- event list ---------- */
+#eventList{display:grid; grid-template-columns:1fr 1fr; gap:6px;}
+.evt{
+  border:1px solid var(--border); border-radius:2px; background:var(--panel-2);
+  overflow:hidden; transition:.15s;
+}
+.evt.active{border-color:var(--green); box-shadow:0 0 0 1px rgba(61,255,94,0.15) inset;}
+.evt-head{display:flex; align-items:center; gap:6px; padding:8px; cursor:pointer;}
+.evt-head:hover{background:var(--green-faint);}
+.evt input[type=checkbox]{
+  appearance:none; width:13px; height:13px; border:1px solid var(--green-dim); background:transparent;
+  cursor:pointer; flex-shrink:0; position:relative;
+}
+.evt input[type=checkbox]:checked{background:var(--green); box-shadow:0 0 6px var(--green);}
+.evt-id{color:var(--text-dim); font-size:9.5px; flex-shrink:0;}
+.evt-label{font-size:11px; flex:1; line-height:1.3;}
+.evt.active .evt-label{color:var(--green);}
+.evt-count{font-size:9px; color:var(--amber); flex-shrink:0;}
+.risk-dot{width:7px; height:7px; border-radius:50%; flex-shrink:0;}
+.risk-none{background:var(--grey);}
+.risk-low{background:var(--green);}
+.risk-medium{background:var(--amber);}
+.risk-high{background:var(--red); box-shadow:0 0 6px var(--red);}
+
+/* ---------- main builder ---------- */
+.empty-state{color:var(--text-dim); font-size:13px; line-height:1.7; padding:30px 10px;}
+.empty-state .arrow{color:var(--green); font-size:16px;}
+.builder-head{border:1px solid var(--border); background:var(--panel-2); border-radius:3px; padding:14px 16px; margin-bottom:14px;}
+.builder-title{font-size:13px; color:var(--green); letter-spacing:1px; margin-bottom:2px;}
+.builder-sub{font-size:10.5px; color:var(--text-dim); margin-bottom:12px;}
+.row{display:flex; gap:10px; align-items:center; margin-bottom:10px; flex-wrap:wrap;}
+.row label{font-size:10.5px; color:var(--text-dim); letter-spacing:1px; text-transform:uppercase; min-width:78px;}
+select,input[type=text]{
+  background:#050805; border:1px solid var(--border); color:var(--text); font-family:var(--mono);
+  font-size:12px; padding:6px 8px; border-radius:2px; outline:none;
+}
+select:focus,input[type=text]:focus{border-color:var(--green);}
+.toggle-group{display:flex; border:1px solid var(--border); border-radius:2px; overflow:hidden;}
+.toggle-group button{
+  background:transparent; border:none; color:var(--text-dim); font-family:var(--mono); font-size:11px;
+  padding:6px 12px; cursor:pointer; letter-spacing:1px;
+}
+.toggle-group button.on{background:var(--green); color:#052008; font-weight:700;}
+.toggle-group button.on.excl{background:var(--red); color:#2a0505;}
+
+/* rule-group blocks */
+.rg-card{border:1px solid var(--border); background:var(--panel-3); border-radius:3px; padding:14px; margin-bottom:12px;}
+.rg-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
+.rg-title{font-size:10.5px; letter-spacing:1.5px; color:var(--text-dim); text-transform:uppercase;}
+.rg-rm{background:transparent; border:1px solid var(--red); color:var(--red); cursor:pointer; font-size:10px; padding:4px 8px; border-radius:2px;}
+.rg-rm:hover{background:rgba(255,77,77,0.15);}
+
+.rule-list{
+  margin-top:6px; max-height:60vh; overflow-y:auto; padding-right:8px;
+  scrollbar-width:thin; scrollbar-color:var(--green-dim) #050805;
+}
+.rule-list::-webkit-scrollbar{width:10px;}
+.rule-list::-webkit-scrollbar-track{background:#050805;}
+.rule-list::-webkit-scrollbar-thumb{
+  background:var(--green-dim); border-radius:6px; border:2px solid #050805;
+  background-clip:padding-box;
+}
+.rule-list::-webkit-scrollbar-thumb:hover{background:var(--green); box-shadow:0 0 6px var(--green);}
+.rule-card{border:1px solid var(--border); border-radius:2px; margin-bottom:6px; background:#050a06; padding:8px;}
+.rule-row{
+  display:grid; grid-template-columns:1fr 1fr 1.3fr auto; gap:6px; align-items:center;
+}
+.rule-row select, .rule-row input{width:100%;}
+.rule-row2{
+  display:grid; grid-template-columns:0.7fr 1.6fr auto; gap:6px; align-items:center; margin-top:6px;
+}
+.rule-row2 input{width:100%; font-size:10.5px; padding:5px 7px;}
+.rule-row2 .tiny-label{font-size:9px; color:var(--text-dim); letter-spacing:1px; text-align:right; padding-right:4px;}
+.rm-btn{
+  background:transparent; border:1px solid var(--red); color:var(--red); cursor:pointer;
+  width:26px; height:26px; border-radius:2px; font-size:13px; line-height:1;
+}
+.rm-btn:hover{background:rgba(255,77,77,0.15);}
+.add-rule-btn{
+  background:transparent; border:1px dashed var(--green-dim); color:var(--green-dim);
+  font-family:var(--mono); font-size:11px; padding:8px 12px; cursor:pointer; width:100%; margin-top:4px; border-radius:2px;
+}
+.add-rule-btn:hover{border-color:var(--green); color:var(--green); background:var(--green-faint);}
+.add-rg-btn{
+  background:transparent; border:1px dashed var(--border); color:var(--text-dim);
+  font-family:var(--mono); font-size:11px; padding:9px 12px; cursor:pointer; width:100%; border-radius:2px; letter-spacing:1px;
+}
+.add-rg-btn:hover{border-color:var(--green); color:var(--green);}
+.no-rules{color:var(--text-dim); font-size:11px; font-style:italic; padding:6px 0;}
+
+/* quick add */
+.quick-add{display:grid; grid-template-columns:1fr auto; gap:6px; margin:10px 0; padding:8px; border:1px dashed var(--border); border-radius:2px;}
+.quick-add input{width:100%;}
+.quick-add button{
+  background:transparent; border:1px solid var(--amber); color:var(--amber); cursor:pointer;
+  font-family:var(--mono); font-size:10.5px; padding:0 10px; border-radius:2px; white-space:nowrap;
+}
+.quick-add button:hover{background:rgba(255,183,3,0.12);}
+.quick-add-label{grid-column:1/-1; font-size:9.5px; color:var(--text-dim); letter-spacing:0.5px; margin-bottom:2px;}
+
+/* warnings */
+.warn-list{margin-top:8px; padding-top:8px; border-top:1px dashed var(--border);}
+.warn-item{font-size:10.5px; color:var(--amber); line-height:1.6; padding-left:14px; position:relative;}
+.warn-item::before{content:"⚠"; position:absolute; left:0;}
+
+/* ---------- global settings ---------- */
+.field-block{margin-bottom:16px;}
+.chip-row{display:flex; gap:6px; flex-wrap:wrap;}
+.chip{
+  border:1px solid var(--border); color:var(--text-dim); font-size:10.5px; padding:5px 9px; border-radius:12px;
+  cursor:pointer; user-select:none;
+}
+.chip.on{border-color:var(--green); color:var(--green); background:var(--green-faint);}
+
+/* ---------- coverage dashboard ---------- */
+.cov-summary{font-size:11px; color:var(--green); margin-bottom:8px;}
+.cov-grid{display:flex; flex-wrap:wrap; gap:5px; margin-bottom:4px;}
+.cov-chip{
+  font-size:9.5px; padding:4px 7px; border-radius:2px; border:1px solid var(--border); color:var(--text-dim);
+  cursor:default;
+}
+.cov-chip.covered{border-color:var(--green); color:var(--green); background:var(--green-faint);}
+
+/* ---------- community configs (full-width grid, no scrollbar) ---------- */
+.community-section{border-top:1px solid var(--border); padding:22px 28px; background:linear-gradient(180deg, transparent, rgba(61,255,94,0.02));}
+.community-section h2{font-size:11px; letter-spacing:2.5px; color:var(--green); margin:0 0 6px; display:flex; align-items:center; gap:8px; text-transform:uppercase;}
+.community-section h2::before{content:"■"; font-size:9px; color:var(--green-dim);}
+.community-desc{font-size:10.5px; color:var(--text-dim); margin-bottom:14px; max-width:760px; line-height:1.5;}
+.cc-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:12px;}
+.cc-card{
+  border:1px solid var(--border); background:var(--panel-2); border-radius:3px; padding:13px 14px;
+  display:flex; flex-direction:column;
+}
+.cc-name{font-size:12px; color:var(--green); font-weight:700; letter-spacing:0.5px;}
+.cc-author{display:block; font-size:9.5px; color:var(--text-dim); font-weight:400; margin-top:2px;}
+.cc-desc{font-size:10.5px; color:var(--text-dim); line-height:1.5; margin:6px 0 10px; flex:1;}
+.cc-btns{display:flex; gap:6px; flex-wrap:wrap;}
+.cc-btn{
+  flex:1; min-width:80px; background:transparent; border:1px solid var(--green-dim); color:var(--green-dim); cursor:pointer;
+  font-family:var(--mono); font-size:10px; letter-spacing:0.5px; padding:6px 6px; border-radius:2px; text-align:center;
+}
+.cc-btn:hover{border-color:var(--green); color:var(--green); background:var(--green-faint);}
+.cc-btn.secondary{border-color:var(--border); color:var(--text-dim);}
+.cc-btn.secondary:hover{border-color:var(--text-dim); color:var(--text);}
+.cc-status{font-size:9.5px; margin-top:8px; color:var(--amber); min-height:12px;}
+
+/* ---------- preview ---------- */
+.terminal{
+  border:1px solid var(--border); border-radius:3px; background:#040704; overflow:hidden;
+}
+.term-bar{display:flex; align-items:center; gap:6px; padding:7px 10px; border-bottom:1px solid var(--border); background:var(--panel-2);}
+.dot{width:9px; height:9px; border-radius:50%; background:var(--green-dim); opacity:0.6;}
+.term-bar .fname{margin-left:8px; font-size:10.5px; color:var(--text-dim);}
+pre#xmlOut{
+  margin:0; padding:14px; font-size:10.5px; line-height:1.55;
+  color:var(--green); white-space:pre-wrap; word-break:break-word;
+  max-height:56vh; overflow-y:auto;
+  scrollbar-width:thin; scrollbar-color:var(--green-dim) #050805;
+}
+pre#xmlOut::-webkit-scrollbar{width:10px;}
+pre#xmlOut::-webkit-scrollbar-track{background:#050805;}
+pre#xmlOut::-webkit-scrollbar-thumb{
+  background:var(--green-dim); border-radius:6px; border:2px solid #050805;
+  background-clip:padding-box;
+}
+pre#xmlOut::-webkit-scrollbar-thumb:hover{background:var(--green); box-shadow:0 0 6px var(--green);}
+.tag{color:var(--green);}
+.attr{color:var(--amber);}
+.val{color:#7fd4ff;}
+.txt{color:#e8fff0;}
+.cm{color:var(--text-dim);}
+
+.dl-btn{
+  width:100%; margin-top:12px; background:var(--green); color:#04220a; border:none; font-family:var(--mono);
+  font-weight:700; letter-spacing:2px; padding:12px; cursor:pointer; border-radius:2px; font-size:12px;
+  box-shadow:0 0 14px rgba(61,255,94,0.35);
+}
+.dl-btn:hover{background:#5dffa0;}
+.stat-line{display:flex; justify-content:space-between; font-size:10.5px; color:var(--text-dim); margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);}
+.stat-line b{color:var(--green);}
+.stat-line b.warn{color:var(--amber);}
+
+/* ---------- deploy helper (full width) ---------- */
+.deploy-section{border-top:1px solid var(--border); padding:22px 28px; background:linear-gradient(180deg, transparent, rgba(61,255,94,0.03));}
+.deploy-section h2{font-size:11px; letter-spacing:2.5px; color:var(--green); margin:0 0 14px; display:flex; align-items:center; gap:8px; text-transform:uppercase;}
+.deploy-section h2::before{content:"■"; font-size:9px; color:var(--green-dim);}
+.deploy-controls{display:flex; gap:24px; flex-wrap:wrap; margin-bottom:16px; align-items:flex-end;}
+.deploy-field{display:flex; flex-direction:column; gap:6px;}
+.deploy-field label{font-size:10px; color:var(--text-dim); letter-spacing:1.5px; text-transform:uppercase;}
+.deploy-field[data-hidden="true"]{display:none;}
+.deploy-note-inline{font-size:10px; color:var(--text-dim); max-width:260px; line-height:1.5;}
+.deploy-steps{
+  border:1px solid var(--border); border-radius:3px; background:#040704; padding:16px; max-width:900px;
+}
+.step{margin-bottom:14px;}
+.step-top-row{display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;}
+.step-num{color:var(--amber); font-size:11px; letter-spacing:1px;}
+.step-text{font-size:11.5px; color:var(--text); line-height:1.6; margin-bottom:6px;}
+.step-cmd{
+  background:#020402; border:1px solid var(--border); border-radius:2px; padding:8px 10px; color:var(--green);
+  font-size:11px; overflow-x:auto; white-space:pre;
+}
+.copy-btn{
+  background:transparent; border:1px solid var(--green-dim); color:var(--green-dim); cursor:pointer;
+  font-family:var(--mono); font-size:9.5px; letter-spacing:0.5px; padding:3px 9px; border-radius:2px;
+}
+.copy-btn:hover{border-color:var(--green); color:var(--green); background:var(--green-faint);}
+.copy-btn.copied{border-color:var(--green); color:var(--green); background:var(--green-faint);}
+.copy-all-row{display:flex; justify-content:flex-end; margin-bottom:10px;}
+.copy-all-btn{
+  background:transparent; border:1px solid var(--amber); color:var(--amber); cursor:pointer;
+  font-family:var(--mono); font-size:10.5px; letter-spacing:0.5px; padding:6px 12px; border-radius:2px;
+}
+.copy-all-btn:hover{background:rgba(255,183,3,0.12);}
+.copy-all-btn.copied{border-color:var(--green); color:var(--green);}
+.deploy-note{font-size:10.5px; color:var(--amber); margin-top:4px; padding-left:2px;}
+.sig-footer{
+  text-align:center; padding:16px 28px 24px; font-size:10px; color:var(--text-dim);
+  letter-spacing:1px; border-top:1px solid var(--border);
+}
+.sig-footer b{color:var(--green-dim);}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand">
+    <h1>SYSMON.CFG<span class="cursor"></span></h1>
+    <span class="sub">interactive detection-rule builder</span>
+  </div>
+  <div class="pathline">root@detection-eng:~$ <span>select events → stack rule groups → validate → export → deploy</span></div>
+</header>
+
+<nav class="quicknav">
+  <span class="quicknav-label">jump to:</span>
+  <a href="#builderTop">rule builder</a>
+  <a href="#communitySection">community configs</a>
+  <a href="#deploySection" class="quicknav-highlight">⬇ deployment steps (install / update commands)</a>
+</nav>
+
+<div class="grid">
+
+  <!-- LEFT: import + presets + event toggles -->
+  <div class="col">
+    <h2 id="builderTop">Load Your Own Config</h2>
+    <div class="import-box">
+      <div class="import-desc">Already have a sysmonconfig.xml? Import it — every RuleGroup, condition, name, and onmatch setting gets parsed straight into the builder below.</div>
+      <button class="import-btn" id="importBtn">⬆ IMPORT sysmonconfig.xml</button>
+      <input type="file" id="importFile" accept=".xml" style="display:none">
+      <div class="import-status" id="importStatus"></div>
+    </div>
+
+    <h2>Presets</h2>
+    <div class="presets" id="presets"></div>
+
+    <h2 style="margin-top:22px;">Event Types <span style="color:var(--text-dim); font-weight:400; letter-spacing:0;">(30)</span></h2>
+    <div class="row" style="gap:8px; margin-bottom:10px;">
+      <button class="preset-btn" style="flex:1; text-align:center;" id="selectAllBtn">select all filterable</button>
+      <button class="preset-btn" style="flex:1; text-align:center;" id="selectNoneBtn">none</button>
+    </div>
+    <div id="eventList"></div>
+    <div id="nonFilterable"></div>
+  </div>
+
+  <!-- MIDDLE: rule builder -->
+  <div class="col" id="builderCol">
+    <h2>Rule Builder</h2>
+    <div id="builderArea"></div>
+  </div>
+
+  <!-- RIGHT: global settings + coverage + preview -->
+  <div class="col">
+    <h2>Global Settings</h2>
+    <div class="field-block">
+      <div class="row"><label>Schema</label>
+        <select id="schemaVersion">
+          <option>4.90</option><option>4.82</option><option>4.50</option><option>4.30</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-block">
+      <div class="row" style="margin-bottom:6px;"><label>Hashing</label></div>
+      <div class="chip-row" id="hashChips"></div>
+    </div>
+    <div class="field-block">
+      <div class="chip-row">
+        <div class="chip" id="chipRevocation">CheckRevocation</div>
+        <div class="chip" id="chipDns">DnsLookup</div>
+      </div>
+    </div>
+
+    <h2 style="margin-top:22px;">ATT&CK Coverage</h2>
+    <div id="coveragePanel"></div>
+
+    <h2 style="margin-top:22px;">Live Export</h2>
+    <div class="terminal">
+      <div class="term-bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span class="fname">sysmonconfig.xml</span></div>
+      <pre id="xmlOut"></pre>
+    </div>
+    <button class="dl-btn" id="downloadBtn">⬇ DOWNLOAD sysmonconfig.xml</button>
+    <div class="stat-line"><span>event types enabled</span><b id="statEnabled">0</b></div>
+    <div class="stat-line"><span>rule groups</span><b id="statGroups">0</b></div>
+    <div class="stat-line"><span>total conditions</span><b id="statRules">0</b></div>
+    <div class="stat-line"><span>lint warnings</span><b class="warn" id="statWarnings">0</b></div>
+  </div>
+
+</div>
+
+<!-- COMMUNITY CONFIGS (full width, efficient grid — no scrollbar) -->
+<section class="community-section" id="communitySection">
+  <h2>Community Configs</h2>
+  <div class="community-desc">Pull a maintained, battle-tested baseline straight from its official GitHub repo instead of (or on top of) building your own.</div>
+  <div class="cc-grid" id="communityConfigs"></div>
+</section>
+
+<!-- DEPLOY HELPER (full width) -->
+<section class="deploy-section" id="deploySection">
+  <h2>Deployment Helper</h2>
+  <div class="deploy-controls">
+    <div class="deploy-field">
+      <label>Platform</label>
+      <div class="toggle-group" id="deployPlatform">
+        <button data-v="windows" class="on">WINDOWS</button>
+        <button data-v="linux">LINUX</button>
+      </div>
+    </div>
+    <div class="deploy-field">
+      <label>Situation</label>
+      <div class="toggle-group" id="deployMode">
+        <button data-v="install" class="on">FIRST-TIME INSTALL</button>
+        <button data-v="update">UPDATING EXISTING</button>
+      </div>
+    </div>
+    <div class="deploy-field" id="fieldOs">
+      <label>OS</label>
+      <select id="deployOs">
+        <option value="client">Windows 10 / 11 (Desktop)</option>
+        <option value="server">Windows Server (Desktop Experience)</option>
+        <option value="servercore">Windows Server Core (no GUI)</option>
+      </select>
+    </div>
+    <div class="deploy-field" id="fieldArch">
+      <label>Architecture</label>
+      <select id="deployArch">
+        <option value="x64">x64</option>
+        <option value="x86">x86 (32-bit)</option>
+        <option value="arm64">ARM64</option>
+      </select>
+    </div>
+    <div class="deploy-field" id="fieldDistro" data-hidden="true">
+      <label>Distribution</label>
+      <select id="deployDistro">
+        <option value="ubuntu-debian">Ubuntu / Debian</option>
+        <option value="rhel-family">RHEL / CentOS Stream / Rocky / AlmaLinux</option>
+        <option value="fedora">Fedora</option>
+        <option value="suse">SUSE / openSUSE</option>
+        <option value="amazon-linux">Amazon Linux 2 / 2023</option>
+      </select>
+    </div>
+    <div class="deploy-note-inline" id="deployPlatformNote"></div>
+  </div>
+  <div class="copy-all-row"><button class="copy-all-btn" id="copyAllBtn">⧉ copy all commands</button></div>
+  <div class="deploy-steps" id="deploySteps"></div>
+</section>
+
+<div class="sig-footer">built by <b>Shridhar Kamath</b> — using Claude</div>
+</div>
+
+<script>
+/* ============ SCHEMA DEFINITIONS ============ */
+const CONDITIONS = ["is","is not","contains","contains any","contains all","excludes","excludes any","excludes all","begin with","not begin with","end with","not end with","less than","more than","image","not image"];
+
+const EVENT_TYPES = [
+ {tag:"ProcessCreate", id:"1", label:"Process Create", group:"Process",
+  fields:["RuleName","UtcTime","Image","OriginalFileName","CommandLine","CurrentDirectory","User","IntegrityLevel","Hashes","ParentImage","ParentCommandLine","ParentUser"]},
+ {tag:"FileCreateTime", id:"2", label:"File Creation Time Changed", group:"File",
+  fields:["RuleName","Image","TargetFilename","CreationUtcTime","PreviousCreationUtcTime","User"]},
+ {tag:"NetworkConnect", id:"3", label:"Network Connection", group:"Network",
+  fields:["RuleName","Image","User","Protocol","Initiated","SourceIp","SourceHostname","SourcePort","DestinationIp","DestinationHostname","DestinationPort","DestinationPortName"]},
+ {tag:"ProcessTerminate", id:"5", label:"Process Terminate", group:"Process",
+  fields:["RuleName","Image","User"]},
+ {tag:"DriverLoad", id:"6", label:"Driver Loaded", group:"System",
+  fields:["RuleName","ImageLoaded","Hashes","Signed","Signature","SignatureStatus"]},
+ {tag:"ImageLoad", id:"7", label:"Image / DLL Loaded", group:"Process",
+  fields:["RuleName","Image","ImageLoaded","Signed","Signature","SignatureStatus","Hashes","User"]},
+ {tag:"CreateRemoteThread", id:"8", label:"Create Remote Thread", group:"Process",
+  fields:["RuleName","SourceImage","TargetImage","StartAddress","StartModule","StartFunction","SourceUser","TargetUser"]},
+ {tag:"RawAccessRead", id:"9", label:"Raw Access Read", group:"File",
+  fields:["RuleName","Image","Device","User"]},
+ {tag:"ProcessAccess", id:"10", label:"Process Accessed", group:"Process",
+  fields:["RuleName","SourceImage","TargetImage","GrantedAccess","SourceUser","TargetUser"]},
+ {tag:"FileCreate", id:"11", label:"File Create", group:"File",
+  fields:["RuleName","Image","TargetFilename","User"]},
+ {tag:"RegistryEvent", id:"12/13/14", label:"Registry Event", group:"Registry",
+  fields:["RuleName","EventType","Image","TargetObject","Details","NewName","User"]},
+ {tag:"FileCreateStreamHash", id:"15", label:"File Stream Hash (ADS)", group:"File",
+  fields:["RuleName","Image","TargetFilename","Hash","User"]},
+ {tag:"PipeEvent", id:"17/18", label:"Named Pipe Created / Connected", group:"System",
+  fields:["RuleName","EventType","PipeName","Image","User"]},
+ {tag:"WmiEvent", id:"19/20/21", label:"WMI Filter / Consumer / Binding", group:"System",
+  fields:["RuleName","EventType","Operation","Name","Type","Destination","Consumer","Filter","User"]},
+ {tag:"DnsQuery", id:"22", label:"DNS Query", group:"Network",
+  fields:["RuleName","QueryName","QueryStatus","QueryResults","Image","User"]},
+ {tag:"FileDelete", id:"23", label:"File Delete (Archived)", group:"File",
+  fields:["RuleName","Image","TargetFilename","Hashes","IsExecutable","User"]},
+ {tag:"ClipboardChange", id:"24", label:"Clipboard Change", group:"System",
+  fields:["RuleName","Image","Session","ClientInfo","User"]},
+ {tag:"ProcessTampering", id:"25", label:"Process Tampering", group:"Process",
+  fields:["RuleName","Image","Type","User"]},
+ {tag:"FileDeleteDetected", id:"26", label:"File Delete Logged", group:"File",
+  fields:["RuleName","Image","TargetFilename","Hashes","IsExecutable","User"]},
+ {tag:"FileBlockExecutable", id:"27", label:"File Block Executable", group:"File",
+  fields:["RuleName","Image","TargetFilename","Hashes","User"]},
+ {tag:"FileBlockShredding", id:"28", label:"File Block Shredding", group:"File",
+  fields:["RuleName","Image","TargetFilename","Hashes","IsExecutable","User"]},
+ {tag:"FileExecutableDetected", id:"29", label:"File Executable Detected", group:"File",
+  fields:["RuleName","Image","TargetFilename","Hashes","User"]},
+];
+
+const NON_FILTERABLE = [
+ {id:"4", label:"Sysmon Service State Changed", note:"Always logged when the service starts/stops. No filter rule exists for it."},
+ {id:"16", label:"Sysmon Configuration Change", note:"Always logged when the config is reloaded. No filter rule exists for it."}
+];
+
+/* Plain-language, one-line description per event type — inserted into the
+   exported XML as a comment above each event type's rule groups. */
+const EVENT_NOTES = {
+  ProcessCreate: "Logs every new process that starts — command line, parent process, and user. The single most useful event for catching malicious execution.",
+  FileCreateTime: "Flags when a file's creation timestamp is changed after the fact — a classic anti-forensics trick called timestomping.",
+  NetworkConnect: "Logs outbound TCP connections a process makes — source/destination IP, port, and which process made the call.",
+  ProcessTerminate: "Logs when a process ends. Useful for building a timeline of what ran and for how long.",
+  DriverLoad: "Logs kernel drivers as they load, including whether they're signed — important because malicious drivers run with kernel privileges.",
+  ImageLoad: "Logs every DLL loaded by a process. Very high volume — only enable with tight filters.",
+  CreateRemoteThread: "Logs one process injecting a thread into another — a common code-injection technique.",
+  RawAccessRead: "Logs raw, sector-level disk reads that bypass the normal file system — used to read locked files or dump credentials.",
+  ProcessAccess: "Logs one process opening a handle to another (e.g. reading lsass.exe memory) — a strong credential-theft indicator.",
+  FileCreate: "Logs new files being written to disk, with the full path — good for catching dropped malware or staged data.",
+  RegistryEvent: "Logs registry keys/values being created, changed, deleted, or renamed — where most persistence mechanisms live.",
+  FileCreateStreamHash: "Logs files written with an NTFS Alternate Data Stream, including the 'Mark of the Web' from downloads.",
+  PipeEvent: "Logs named pipes being created or connected to — often used by attack frameworks like Cobalt Strike for inter-process communication.",
+  WmiEvent: "Logs WMI event filters, consumers, and bindings — a stealthy persistence mechanism that survives reboots.",
+  DnsQuery: "Logs every DNS lookup a process makes. Extremely high volume — strongly recommend filtering before enabling broadly.",
+  FileDelete: "Logs (and can archive) files being deleted — useful for catching anti-forensics or ransomware behavior.",
+  ClipboardChange: "Logs clipboard content changes. Mainly useful in sandboxes/kiosk environments, rarely enabled broadly.",
+  ProcessTampering: "Logs process hollowing / image tampering — when a process's memory image is swapped out from under it.",
+  FileDeleteDetected: "A lighter-weight version of FileDelete that logs the deletion without archiving the file content.",
+  FileBlockExecutable: "Logs (and can block) new executable files from being written to disk.",
+  FileBlockShredding: "Logs (and can block) attempts to overwrite a file's content before deletion — a ransomware/anti-forensics behavior.",
+  FileExecutableDetected: "Logs when a file is confirmed to be an executable, regardless of its extension."
+};
+
+/* Event types that generate a lot of volume when left broad — used by the
+   verbosity/risk scorer. */
+const HIGH_VOLUME = ["NetworkConnect","DnsQuery","RegistryEvent","FileCreate","ProcessAccess","ImageLoad","ProcessCreate","PipeEvent"];
+
+/* Path/tool-like fields used by the quick-add shortcut. */
+const PATH_LIKE_FIELDS = ["Image","ParentImage","TargetFilename","ImageLoaded","SourceImage","TargetImage","CommandLine","OriginalFileName"];
+
+/* Small reference table of common ATT&CK techniques for the coverage panel.
+   Not exhaustive — just the techniques these rules commonly tag. */
+const MITRE_MAP = {
+  T1059:{name:"Command and Scripting Interpreter", tactic:"Execution"},
+  T1027:{name:"Obfuscated Files or Information", tactic:"Defense Evasion"},
+  T1003:{name:"OS Credential Dumping", tactic:"Credential Access"},
+  T1547:{name:"Boot or Logon Autostart Execution", tactic:"Persistence"},
+  T1543:{name:"Create or Modify System Process", tactic:"Persistence"},
+  T1570:{name:"Lateral Tool Transfer", tactic:"Lateral Movement"},
+  T1091:{name:"Replication Through Removable Media", tactic:"Initial Access"},
+  T1112:{name:"Modify Registry", tactic:"Defense Evasion"},
+  T1053:{name:"Scheduled Task/Job", tactic:"Execution"},
+  T1055:{name:"Process Injection", tactic:"Defense Evasion"},
+  T1218:{name:"System Binary Proxy Execution", tactic:"Defense Evasion"},
+  T1105:{name:"Ingress Tool Transfer", tactic:"Command and Control"},
+  T1071:{name:"Application Layer Protocol", tactic:"Command and Control"},
+  T1490:{name:"Inhibit System Recovery", tactic:"Impact"},
+  T1489:{name:"Service Stop", tactic:"Impact"},
+  T1562:{name:"Impair Defenses", tactic:"Defense Evasion"},
+  T1021:{name:"Remote Services", tactic:"Lateral Movement"},
+  T1046:{name:"Network Service Discovery", tactic:"Discovery"},
+  T1082:{name:"System Information Discovery", tactic:"Discovery"},
+  T1057:{name:"Process Discovery", tactic:"Discovery"},
+  T1016:{name:"System Network Configuration Discovery", tactic:"Discovery"},
+  T1204:{name:"User Execution", tactic:"Execution"},
+  T1566:{name:"Phishing", tactic:"Initial Access"},
+  T1036:{name:"Masquerading", tactic:"Defense Evasion"},
+  T1134:{name:"Access Token Manipulation", tactic:"Privilege Escalation"},
+  T1484:{name:"Domain or Group Policy Modification", tactic:"Defense Evasion"},
+  T1098:{name:"Account Manipulation", tactic:"Persistence"},
+  T1078:{name:"Valid Accounts", tactic:"Persistence"}
+};
+
+/* ============ STATE ============ */
+let state = {};
+let blockUid = 1;
+function freshBlock(onmatch){ return {uid: blockUid++, onmatch: onmatch||"exclude", groupRelation:"or", rules:[]}; }
+EVENT_TYPES.forEach(e=>state[e.tag]={enabled:false, blocks:[]});
+let globalOpts = {schemaversion:"4.90", hashes:{SHA256:true, MD5:false, SHA1:false, IMPHASH:false}, checkRevocation:false, dnsLookup:false};
+let activeTag = null;
+let deployState = {platform:'windows', mode:'install', os:'client', arch:'x64', distro:'ubuntu-debian'};
+
+/* ============ PRESETS ============ */
+const PRESETS = {
+  minimal: {
+    label:"Minimal — Capture Everything",
+    desc:"Enable core events, no filters, no noise reduction",
+    apply(){
+      resetState();
+      ["ProcessCreate","ProcessTerminate","NetworkConnect","FileCreate","RegistryEvent","DriverLoad"].forEach(t=>{
+        state[t].enabled=true; state[t].blocks=[freshBlock("exclude")];
+      });
+    }
+  },
+  baseline: {
+    label:"General Baseline",
+    desc:"Broad visibility, common noise excluded (SwiftOnSecurity-style)",
+    apply(){
+      resetState();
+      state.ProcessCreate.enabled=true;
+      state.ProcessCreate.blocks=[Object.assign(freshBlock("exclude"), {rules:[
+        {field:"Image", cond:"end with", val:"\\\\MsMpEng.exe", name:"", comment:"Windows Defender"},
+        {field:"ParentImage", cond:"end with", val:"\\\\svchost.exe", name:"", comment:"Windows service host noise"}
+      ]})];
+      state.NetworkConnect.enabled=true;
+      state.NetworkConnect.blocks=[Object.assign(freshBlock("exclude"), {rules:[
+        {field:"Image", cond:"end with", val:"\\\\chrome.exe", name:"", comment:"Browser noise"}
+      ]})];
+      state.FileCreate.enabled=true;
+      state.FileCreate.blocks=[Object.assign(freshBlock("exclude"), {rules:[
+        {field:"TargetFilename", cond:"contains", val:"\\\\AppData\\\\Local\\\\Temp\\\\", name:"", comment:"Ignore temp scratch files"}
+      ]})];
+      state.RegistryEvent.enabled=true;
+      state.RegistryEvent.blocks=[Object.assign(freshBlock("exclude"), {rules:[
+        {field:"TargetObject", cond:"begin with", val:"HKLM\\\\SOFTWARE\\\\Microsoft\\\\Windows Defender", name:"", comment:"Defender internal churn"}
+      ]})];
+      state.DriverLoad.enabled=true;
+      state.DriverLoad.blocks=[Object.assign(freshBlock("exclude"), {rules:[
+        {field:"Signed", cond:"is", val:"true", name:"", comment:"Trust signed drivers"}
+      ]})];
+      state.ProcessTerminate.enabled=true; state.ProcessTerminate.blocks=[freshBlock("exclude")];
+      state.CreateRemoteThread.enabled=true; state.CreateRemoteThread.blocks=[freshBlock("exclude")];
+      state.PipeEvent.enabled=true; state.PipeEvent.blocks=[freshBlock("exclude")];
+      state.WmiEvent.enabled=true; state.WmiEvent.blocks=[freshBlock("exclude")];
+      state.DnsQuery.enabled=true; state.DnsQuery.blocks=[freshBlock("exclude")];
+      state.ProcessTampering.enabled=true; state.ProcessTampering.blocks=[freshBlock("exclude")];
+    }
+  },
+  otics: {
+    label:"OT / ICS Detection",
+    desc:"Engineering-workstation & field-device oriented ruleset",
+    apply(){
+      resetState();
+      state.ProcessCreate.enabled=true;
+      state.ProcessCreate.blocks=[Object.assign(freshBlock("include"), {rules:[
+        {field:"CommandLine", cond:"contains", val:"powershell", name:"T1059", comment:"PowerShell on an engineering workstation"},
+        {field:"CommandLine", cond:"contains", val:"-enc", name:"T1027", comment:"Encoded PowerShell payload"},
+        {field:"Image", cond:"contains", val:"psexec", name:"T1570", comment:"Lateral movement tooling"},
+        {field:"Image", cond:"contains", val:"plcedit", name:"", comment:"PLC programming tool launched"},
+        {field:"Image", cond:"contains", val:"step7", name:"", comment:"Siemens engineering software launched"}
+      ]})];
+      state.NetworkConnect.enabled=true;
+      state.NetworkConnect.blocks=[Object.assign(freshBlock("include"), {rules:[
+        {field:"DestinationPort", cond:"is", val:"502", name:"", comment:"Modbus/TCP"},
+        {field:"DestinationPort", cond:"is", val:"102", name:"", comment:"S7comm"},
+        {field:"DestinationPort", cond:"is", val:"44818", name:"", comment:"EtherNet/IP"},
+        {field:"DestinationPort", cond:"is", val:"20000", name:"", comment:"DNP3"}
+      ]})];
+      state.FileCreate.enabled=true;
+      state.FileCreate.blocks=[Object.assign(freshBlock("include"), {rules:[
+        {field:"TargetFilename", cond:"end with", val:".exe", name:"", comment:"New executable dropped"},
+        {field:"TargetFilename", cond:"contains", val:"\\\\Removable", name:"T1091", comment:"Removable media write"}
+      ]})];
+      state.RegistryEvent.enabled=true;
+      state.RegistryEvent.blocks=[Object.assign(freshBlock("include"), {rules:[
+        {field:"TargetObject", cond:"contains", val:"\\\\Run\\\\", name:"T1547", comment:"Run-key persistence"},
+        {field:"TargetObject", cond:"contains", val:"\\\\Services\\\\", name:"T1543", comment:"Service persistence"}
+      ]})];
+      state.DriverLoad.enabled=true;
+      state.DriverLoad.blocks=[Object.assign(freshBlock("exclude"), {rules:[
+        {field:"Signed", cond:"is", val:"true", name:"", comment:"Trust signed drivers"}
+      ]})];
+      state.CreateRemoteThread.enabled=true; state.CreateRemoteThread.blocks=[freshBlock("exclude")];
+      state.ProcessAccess.enabled=true;
+      state.ProcessAccess.blocks=[Object.assign(freshBlock("include"), {rules:[
+        {field:"TargetImage", cond:"end with", val:"\\\\lsass.exe", name:"T1003", comment:"Credential-access indicator"}
+      ]})];
+      state.DnsQuery.enabled=true; state.DnsQuery.blocks=[freshBlock("exclude")];
+      globalOpts.hashes.SHA256=true;
+    }
+  },
+  clear: {
+    label:"Clear All",
+    desc:"Reset every event type and rule",
+    apply(){ resetState(); }
+  }
+};
+function resetState(){
+  EVENT_TYPES.forEach(e=>state[e.tag]={enabled:false, blocks:[]});
+}
+
+/* ============ IMPORT EXISTING XML ============ */
+function importXML(text){
+  const knownTags = EVENT_TYPES.map(e=>e.tag);
+  const doc = new DOMParser().parseFromString(text, 'application/xml');
+  if(doc.querySelector('parsererror')) throw new Error('the file is not valid XML');
+  const sysmonEl = doc.querySelector('Sysmon');
+  if(!sysmonEl) throw new Error('no <Sysmon> root element found');
+  const filtering = sysmonEl.querySelector('EventFiltering');
+  if(!filtering) throw new Error('no <EventFiltering> section found');
+
+  resetState();
+  globalOpts.schemaversion = sysmonEl.getAttribute('schemaversion') || globalOpts.schemaversion;
+  Object.keys(globalOpts.hashes).forEach(h=>globalOpts.hashes[h]=false);
+  const hashEl = Array.from(sysmonEl.children).find(c=>c.tagName==='HashAlgorithms');
+  if(hashEl){
+    hashEl.textContent.split(',').map(s=>s.trim().toUpperCase()).forEach(h=>{
+      if(h==='*') Object.keys(globalOpts.hashes).forEach(k=>globalOpts.hashes[k]=true);
+      else if(globalOpts.hashes.hasOwnProperty(h)) globalOpts.hashes[h]=true;
+    });
+  }
+  globalOpts.checkRevocation = Array.from(sysmonEl.children).some(c=>c.tagName==='CheckRevocation');
+  const dnsEl = Array.from(sysmonEl.children).find(c=>c.tagName==='DnsLookup');
+  if(dnsEl) globalOpts.dnsLookup = dnsEl.textContent.trim().toLowerCase()==='true';
+
+  let importedCount = 0, skippedTags = new Set();
+  function processEventTypeEl(evEl, relation){
+    const tag = evEl.tagName;
+    if(!knownTags.includes(tag)){ skippedTags.add(tag); return; }
+    const onmatch = evEl.getAttribute('onmatch') || 'include';
+    const block = freshBlock(onmatch);
+    block.groupRelation = relation || 'or';
+    Array.from(evEl.children).forEach(condEl=>{
+      if(condEl.tagName === 'Rule'){
+        block.groupRelation = condEl.getAttribute('groupRelation') || block.groupRelation;
+        Array.from(condEl.children).forEach(fieldEl=>{
+          block.rules.push({
+            field: fieldEl.tagName,
+            cond: fieldEl.getAttribute('condition') || 'contains',
+            val: fieldEl.textContent.trim(),
+            name: fieldEl.getAttribute('name') || '',
+            comment: ''
+          });
+        });
+      } else {
+        block.rules.push({
+          field: condEl.tagName,
+          cond: condEl.getAttribute('condition') || 'contains',
+          val: condEl.textContent.trim(),
+          name: condEl.getAttribute('name') || '',
+          comment: ''
+        });
+      }
+    });
+    state[tag].enabled = true;
+    state[tag].blocks.push(block);
+    importedCount++;
+  }
+  Array.from(filtering.children).forEach(child=>{
+    if(child.tagName === 'RuleGroup'){
+      const relation = child.getAttribute('groupRelation') || 'or';
+      Array.from(child.children).forEach(evEl=>processEventTypeEl(evEl, relation));
+    } else {
+      processEventTypeEl(child, 'or');
+    }
+  });
+
+  activeTag = EVENT_TYPES.find(e=>state[e.tag].enabled)?.tag || null;
+  let msg = `Imported ${importedCount} rule group(s) across ${EVENT_TYPES.filter(e=>state[e.tag].enabled).length} event type(s). Comments in the source file weren't preserved (browsers don't expose XML comments as parseable nodes) — everything else (onmatch, groupRelation, conditions, name attributes) came through.`;
+  if(skippedTags.size) msg += ` Skipped unrecognized tag(s): ${Array.from(skippedTags).join(', ')}.`;
+  return msg;
+}
+
+const importFileEl = document.getElementById('importFile');
+document.getElementById('importBtn').addEventListener('click', ()=>importFileEl.click());
+importFileEl.addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  const statusEl = document.getElementById('importStatus');
+  statusEl.className = 'import-status';
+  statusEl.textContent = 'reading ' + file.name + '…';
+  reader.onload = ()=>{
+    try{
+      const msg = importXML(reader.result);
+      statusEl.className = 'import-status ok';
+      statusEl.textContent = msg;
+      renderAll();
+    }catch(err){
+      statusEl.className = 'import-status err';
+      statusEl.textContent = 'Import failed — ' + err.message + '.';
+    }
+  };
+  reader.onerror = ()=>{ statusEl.className='import-status err'; statusEl.textContent='Could not read that file.'; };
+  reader.readAsText(file);
+  importFileEl.value = '';
+});
+
+/* ============ RENDER: presets ============ */
+const presetsEl = document.getElementById('presets');
+Object.entries(PRESETS).forEach(([key,p])=>{
+  const btn = document.createElement('button');
+  btn.className='preset-btn';
+  btn.innerHTML = `▸ ${p.label}<span class="desc">${p.desc}</span>`;
+  btn.onclick = ()=>{ p.apply(); activeTag = EVENT_TYPES.find(e=>state[e.tag].enabled)?.tag || null; renderAll(); };
+  presetsEl.appendChild(btn);
+});
+
+/* ============ RISK SCORING ============ */
+function blockRisk(tag, block){
+  const n = block.rules.filter(r=>r.val).length;
+  if(block.onmatch==='include'){
+    return n===0 ? {level:'none', label:'produces zero events'} : {level:'low', label:'targeted, produces only matches'};
+  }
+  if(n===0) return HIGH_VOLUME.includes(tag)
+    ? {level:'high', label:'full firehose — no filtering on a high-volume event type'}
+    : {level:'medium', label:'logs everything for this event type'};
+  return HIGH_VOLUME.includes(tag)
+    ? {level:'medium', label:'broad, partially filtered on a high-volume event type'}
+    : {level:'low', label:'broad but on a low-volume event type'};
+}
+function tagRisk(tag){
+  const s = state[tag];
+  if(!s.enabled || s.blocks.length===0) return null;
+  const order = {none:0, low:1, medium:2, high:3};
+  return s.blocks.map(b=>blockRisk(tag,b)).reduce((worst,r)=> order[r.level]>order[worst.level]? r: worst);
+}
+
+/* ============ LINTING ============ */
+function lintBlock(tag, block){
+  const warnings = [];
+  const validRules = block.rules.filter(r=>r.val);
+  if(block.onmatch==='include' && validRules.length===0){
+    warnings.push('INCLUDE with no conditions — this group logs nothing.');
+  }
+  if(block.onmatch==='exclude' && validRules.length===0 && HIGH_VOLUME.includes(tag)){
+    warnings.push('EXCLUDE with no conditions on a high-volume event type — expect heavy log volume.');
+  }
+  const seen = new Set();
+  validRules.forEach(r=>{
+    const key = (r.field+'|'+r.cond+'|'+r.val).toLowerCase();
+    if(seen.has(key)) warnings.push(`Duplicate condition: ${r.field} ${r.cond} "${r.val}".`);
+    seen.add(key);
+    if(['contains','begin with','end with'].includes(r.cond) && r.val.length>0 && r.val.length<3){
+      warnings.push(`"${r.val}" on ${r.field} is very short — may match far more than intended.`);
+    }
+  });
+  return warnings;
+}
+function totalWarnings(){
+  let n=0;
+  EVENT_TYPES.forEach(e=>{
+    if(!state[e.tag].enabled) return;
+    state[e.tag].blocks.forEach(b=>{ n += lintBlock(e.tag,b).length; });
+  });
+  return n;
+}
+
+/* ============ RENDER: event list ============ */
+const eventListEl = document.getElementById('eventList');
+function renderEventList(){
+  eventListEl.innerHTML='';
+  EVENT_TYPES.forEach(e=>{
+    const s = state[e.tag];
+    const ruleCount = s.blocks.reduce((n,b)=>n+b.rules.length,0);
+    const risk = tagRisk(e.tag);
+    const div = document.createElement('div');
+    div.className = 'evt' + (s.enabled?' active':'');
+    div.innerHTML = `
+      <div class="evt-head">
+        <input type="checkbox" ${s.enabled?'checked':''} data-tag="${e.tag}">
+        ${risk? `<span class="risk-dot risk-${risk.level}" title="${risk.label}"></span>` : ''}
+        <span class="evt-id">#${e.id}</span>
+        <span class="evt-label">${e.label}</span>
+        ${s.blocks.length? `<span class="evt-count">${s.blocks.length}g/${ruleCount}r</span>`:''}
+      </div>`;
+    div.querySelector('input').addEventListener('click', ev=>{
+      ev.stopPropagation();
+      s.enabled = ev.target.checked;
+      if(s.enabled){
+        activeTag = e.tag;
+        if(s.blocks.length===0) s.blocks.push(freshBlock("exclude"));
+      }
+      renderAll();
+    });
+    div.querySelector('.evt-head').addEventListener('click', ()=>{ activeTag = e.tag; renderAll(); });
+    eventListEl.appendChild(div);
+  });
+}
+
+function renderNonFilterable(){
+  const el = document.getElementById('nonFilterable');
+  el.innerHTML = `<div style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);">
+    <div style="font-size:9.5px; letter-spacing:1.5px; color:var(--text-dim); margin-bottom:6px;">NOT FILTERABLE — ALWAYS LOGGED</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+    ${NON_FILTERABLE.map(n=>`
+      <div class="evt" style="opacity:0.6;">
+        <div class="evt-head" style="cursor:default;">
+          <span class="evt-id">#${n.id}</span>
+          <span class="evt-label">${n.label}</span>
+        </div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+document.getElementById('selectAllBtn').addEventListener('click', ()=>{
+  EVENT_TYPES.forEach(e=>{
+    state[e.tag].enabled = true;
+    if(state[e.tag].blocks.length===0) state[e.tag].blocks.push(freshBlock("exclude"));
+  });
+  activeTag = activeTag || EVENT_TYPES[0].tag;
+  renderAll();
+});
+document.getElementById('selectNoneBtn').addEventListener('click', ()=>{
+  EVENT_TYPES.forEach(e=>{ state[e.tag].enabled = false; });
+  renderAll();
+});
+
+/* ============ RENDER: builder ============ */
+const builderArea = document.getElementById('builderArea');
+function renderBuilder(){
+  const def = EVENT_TYPES.find(e=>e.tag===activeTag);
+  if(!def){
+    builderArea.innerHTML = `<div class="empty-state"><span class="arrow">←</span> select an event type on the left, import a config, or load a preset, to start defining rule groups.</div>`;
+    return;
+  }
+  const s = state[def.tag];
+  builderArea.innerHTML = `
+    <div class="builder-head">
+      <div class="builder-title">${def.label} <span style="color:var(--text-dim)">// &lt;${def.tag}&gt;</span></div>
+      <div class="builder-sub">Event ID ${def.id} — ${EVENT_NOTES[def.tag]||''}</div>
+      <div class="row"><label>Enabled</label>
+        <div class="toggle-group"><button id="tglEnabled" class="${s.enabled?'on':''}">${s.enabled?'ON':'OFF'}</button></div>
+      </div>
+    </div>
+    <div id="rgList"></div>
+    <button class="add-rg-btn" id="addRgBtn">+ add rule group (RuleGroup block)</button>
+  `;
+
+  document.getElementById('tglEnabled').onclick=()=>{
+    s.enabled=!s.enabled;
+    if(s.enabled && s.blocks.length===0) s.blocks.push(freshBlock("exclude"));
+    renderAll();
+  };
+  document.getElementById('addRgBtn').onclick=()=>{ s.blocks.push(freshBlock("exclude")); renderAll(); };
+
+  const rgList = document.getElementById('rgList');
+  if(s.blocks.length===0){
+    rgList.innerHTML = `<div class="no-rules">no rule groups yet — click "add rule group" to start, or this event type won't appear in the export.</div>`;
+    return;
+  }
+
+  s.blocks.forEach((block, bi)=>{
+    const card = document.createElement('div');
+    card.className='rg-card';
+    const fieldOptions = Array.from(new Set(def.fields));
+    card.innerHTML = `
+      <div class="rg-top">
+        <span class="rg-title">RuleGroup ${bi+1}</span>
+        ${s.blocks.length>1? `<button class="rg-rm" data-bi="${bi}">remove group</button>`:''}
+      </div>
+      <div class="row" style="margin-bottom:8px;"><label>Onmatch</label>
+        <div class="toggle-group">
+          <button data-bi="${bi}" data-act="incl" class="${block.onmatch==='include'?'on':''}">INCLUDE</button>
+          <button data-bi="${bi}" data-act="excl" class="${block.onmatch==='exclude'?'on excl':''}">EXCLUDE</button>
+        </div>
+      </div>
+      <div class="row" style="margin-bottom:8px;"><label>Relation</label>
+        <div class="toggle-group">
+          <button data-bi="${bi}" data-act="or" class="${block.groupRelation==='or'?'on':''}">OR</button>
+          <button data-bi="${bi}" data-act="and" class="${block.groupRelation==='and'?'on':''}">AND</button>
+        </div>
+      </div>
+      <div class="rule-list" data-bi="${bi}"></div>
+      <button class="add-rule-btn" data-bi="${bi}">+ add condition</button>
+      <div class="quick-add">
+        <div class="quick-add-label">QUICK ADD — type an app / tool / path, it'll add a "contains" rule across this event's path-like fields at once</div>
+        <input type="text" placeholder="e.g. psexec.exe or C:\\Tools\\evil.exe" data-bi="${bi}" class="qa-input">
+        <button data-bi="${bi}" class="qa-btn">+ add to fields</button>
+      </div>
+      <div class="warn-list" data-bi="${bi}"></div>
+    `;
+    if(s.blocks.length>1){
+      card.querySelector('.rg-rm').onclick=()=>{ s.blocks.splice(bi,1); renderAll(); };
+    }
+    card.querySelectorAll('.toggle-group button').forEach(btn=>{
+      btn.onclick=()=>{
+        const act = btn.dataset.act;
+        if(act==='incl') block.onmatch='include';
+        else if(act==='excl') block.onmatch='exclude';
+        else if(act==='or') block.groupRelation='or';
+        else if(act==='and') block.groupRelation='and';
+        renderAll();
+      };
+    });
+    card.querySelector('.add-rule-btn').onclick=()=>{
+      block.rules.push({field:def.fields[0], cond:'contains', val:'', name:'', comment:''});
+      renderAll();
+    };
+    const qaInput = card.querySelector('.qa-input');
+    card.querySelector('.qa-btn').onclick=()=>{
+      const val = qaInput.value.trim();
+      if(!val) return;
+      let candidates = def.fields.filter(f=>PATH_LIKE_FIELDS.includes(f));
+      if(candidates.length===0) candidates = [def.fields[0]];
+      candidates.forEach(f=>{ block.rules.push({field:f, cond:'contains', val, name:'', comment:''}); });
+      renderAll();
+    };
+
+    const ruleListEl = card.querySelector('.rule-list');
+    if(block.rules.length===0){
+      ruleListEl.innerHTML = `<div class="no-rules">no conditions — with EXCLUDE this logs everything matched by this group; with INCLUDE nothing will log.</div>`;
+    } else {
+      block.rules.forEach((r,ri)=>{
+        const options = fieldOptions.includes(r.field) ? fieldOptions : [r.field, ...fieldOptions];
+        const rc = document.createElement('div');
+        rc.className='rule-card';
+        rc.innerHTML = `
+          <div class="rule-row">
+            <select data-ri="${ri}" data-k="field">${options.map(f=>`<option ${f===r.field?'selected':''}>${f}</option>`).join('')}</select>
+            <select data-ri="${ri}" data-k="cond">${CONDITIONS.map(c=>`<option ${c===r.cond?'selected':''}>${c}</option>`).join('')}</select>
+            <input type="text" data-ri="${ri}" data-k="val" placeholder="value…" value="${(r.val||'').replace(/"/g,'&quot;')}">
+            <button class="rm-btn" data-ri="${ri}">×</button>
+          </div>
+          <div class="rule-row2">
+            <span class="tiny-label">name=</span>
+            <input type="text" data-ri="${ri}" data-k="name" placeholder="optional rule name / ATT&amp;CK ID e.g. T1059" value="${(r.name||'').replace(/"/g,'&quot;')}">
+            <span></span>
+          </div>
+          <div class="rule-row2">
+            <span class="tiny-label">// comment</span>
+            <input type="text" data-ri="${ri}" data-k="comment" placeholder="optional comment for this rule" value="${(r.comment||'').replace(/"/g,'&quot;')}">
+            <span></span>
+          </div>
+        `;
+        rc.querySelectorAll('select,input').forEach(el=>{
+          el.addEventListener('input', ()=>{ block.rules[el.dataset.ri][el.dataset.k]=el.value; renderPreview(); renderEventList(); renderCoverage(); renderWarningsOnly(); });
+        });
+        rc.querySelector('.rm-btn').onclick=()=>{ block.rules.splice(ri,1); renderAll(); };
+        ruleListEl.appendChild(rc);
+      });
+    }
+
+    const warnEl = card.querySelector('.warn-list');
+    const warnings = lintBlock(def.tag, block);
+    warnEl.innerHTML = warnings.length ? warnings.map(w=>`<div class="warn-item">${w}</div>`).join('') : '';
+
+    rgList.appendChild(card);
+  });
+}
+/* lightweight refresh for warnings without full re-render, used on keystroke */
+function renderWarningsOnly(){
+  document.querySelectorAll('.warn-list').forEach(el=>{
+    const bi = el.dataset.bi;
+    const def = EVENT_TYPES.find(e=>e.tag===activeTag);
+    if(!def) return;
+    const block = state[def.tag].blocks[bi];
+    if(!block) return;
+    const warnings = lintBlock(def.tag, block);
+    el.innerHTML = warnings.length ? warnings.map(w=>`<div class="warn-item">${w}</div>`).join('') : '';
+  });
+  document.getElementById('statWarnings').textContent = totalWarnings();
+}
+
+/* ============ RENDER: global settings ============ */
+const hashChipsEl = document.getElementById('hashChips');
+function renderGlobal(){
+  hashChipsEl.innerHTML='';
+  Object.keys(globalOpts.hashes).forEach(h=>{
+    const chip = document.createElement('div');
+    chip.className='chip'+(globalOpts.hashes[h]?' on':'');
+    chip.textContent=h;
+    chip.onclick=()=>{ globalOpts.hashes[h]=!globalOpts.hashes[h]; renderAll(); };
+    hashChipsEl.appendChild(chip);
+  });
+  const rev = document.getElementById('chipRevocation');
+  rev.className = 'chip'+(globalOpts.checkRevocation?' on':'');
+  rev.onclick=()=>{ globalOpts.checkRevocation=!globalOpts.checkRevocation; renderAll(); };
+  const dns = document.getElementById('chipDns');
+  dns.className = 'chip'+(globalOpts.dnsLookup?' on':'');
+  dns.onclick=()=>{ globalOpts.dnsLookup=!globalOpts.dnsLookup; renderAll(); };
+  document.getElementById('schemaVersion').value = globalOpts.schemaversion;
+}
+document.getElementById('schemaVersion').addEventListener('change', e=>{ globalOpts.schemaversion=e.target.value; renderPreview(); });
+
+/* ============ RENDER: ATT&CK coverage ============ */
+function renderCoverage(){
+  const el = document.getElementById('coveragePanel');
+  const found = new Set();
+  EVENT_TYPES.forEach(e=>{
+    if(!state[e.tag].enabled) return;
+    state[e.tag].blocks.forEach(b=>b.rules.forEach(r=>{
+      const m = (r.name||'').match(/T\d{4}(\.\d{3})?/gi);
+      if(m) m.forEach(id=>found.add(id.toUpperCase()));
+    }));
+  });
+  const knownIds = Object.keys(MITRE_MAP);
+  const coveredKnown = knownIds.filter(id=>found.has(id));
+  const extra = Array.from(found).filter(id=>!knownIds.includes(id));
+  el.innerHTML = `
+    <div class="cov-summary">${coveredKnown.length} / ${knownIds.length} common techniques tagged${extra.length? ` (+${extra.length} other)`:''}</div>
+    <div class="cov-grid">
+      ${knownIds.map(id=>`<span class="cov-chip ${found.has(id)?'covered':''}" title="${MITRE_MAP[id].name} — ${MITRE_MAP[id].tactic}">${id}</span>`).join('')}
+      ${extra.map(id=>`<span class="cov-chip covered" title="Not in the reference list, but tagged in your rules">${id}</span>`).join('')}
+    </div>
+    <div style="font-size:9.5px; color:var(--text-dim); margin-top:6px;">Tag a rule's <b>name=</b> field with a technique ID (e.g. T1059) to have it show up here.</div>
+  `;
+}
+
+/* ============ XML GENERATION ============ */
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escComment(s){ return String(s).replace(/--/g,'—'); }
+
+function buildXML(){
+  const lines = [];
+  lines.push(`<Sysmon schemaversion="${globalOpts.schemaversion}">`);
+  const hashList = Object.entries(globalOpts.hashes).filter(([,v])=>v).map(([k])=>k);
+  if(hashList.length) lines.push(`  <HashAlgorithms>${hashList.join(',')}</HashAlgorithms>`);
+  if(globalOpts.checkRevocation) lines.push(`  <CheckRevocation/>`);
+  if(globalOpts.dnsLookup) lines.push(`  <DnsLookup>true</DnsLookup>`);
+  lines.push(`  <EventFiltering>`);
+
+  let anyEnabled=false;
+  EVENT_TYPES.forEach(def=>{
+    const s = state[def.tag];
+    if(!s.enabled || s.blocks.length===0) return;
+    anyEnabled=true;
+    lines.push(``);
+    lines.push(`    <!-- EVENT ID ${def.id} : ${def.label.toUpperCase()} [${def.tag}] -->`);
+    if(EVENT_NOTES[def.tag]) lines.push(`    <!-- ${escComment(EVENT_NOTES[def.tag])} -->`);
+    s.blocks.forEach(block=>{
+      const validRules = block.rules.filter(r=>r.val);
+      lines.push(`    <RuleGroup name="" groupRelation="${block.groupRelation}">`);
+      if(validRules.length===0){
+        lines.push(`      <${def.tag} onmatch="${block.onmatch}"/>`);
+      } else {
+        lines.push(`      <${def.tag} onmatch="${block.onmatch}">`);
+        validRules.forEach(r=>{
+          const nameAttr = r.name ? ` name="${esc(r.name)}"` : '';
+          const openTag = `<${r.field}${nameAttr} condition="${r.cond}">${esc(r.val)}</${r.field}>`;
+          const comment = r.comment ? ` <!--${escComment(r.comment)}-->` : '';
+          lines.push(`        ${openTag}${comment}`);
+        });
+        lines.push(`      </${def.tag}>`);
+      }
+      lines.push(`    </RuleGroup>`);
+    });
+  });
+
+  lines.push(`  </EventFiltering>`);
+  lines.push(`</Sysmon>`);
+  if(!anyEnabled){
+    return `<Sysmon schemaversion="${globalOpts.schemaversion}">\n  <EventFiltering>\n    <!-- no event types enabled — toggle some on the left -->\n  </EventFiltering>\n</Sysmon>`;
+  }
+  return lines.join('\n');
+}
+
+function highlight(xml){
+  return xml
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/(&lt;!--.*?--&gt;)/g, '<span class="cm">$1</span>')
+    .replace(/&lt;(\/?[A-Za-z0-9_]+)/g, '&lt;<span class="tag">$1</span>')
+    .replace(/([a-zA-Z]+)=(&quot;.*?&quot;)/g, '<span class="attr">$1</span>=<span class="val">$2</span>')
+    .replace(/&quot;/g,'"');
+}
+
+function renderPreview(){
+  const xml = buildXML();
+  document.getElementById('xmlOut').innerHTML = highlight(xml);
+  document.getElementById('statEnabled').textContent = EVENT_TYPES.filter(e=>state[e.tag].enabled).length;
+  document.getElementById('statGroups').textContent = EVENT_TYPES.reduce((n,e)=>n+(state[e.tag].enabled?state[e.tag].blocks.length:0),0);
+  document.getElementById('statRules').textContent = EVENT_TYPES.reduce((n,e)=>n+state[e.tag].blocks.reduce((m,b)=>m+b.rules.length,0),0);
+  document.getElementById('statWarnings').textContent = totalWarnings();
+  window.__lastXML = xml;
+}
+
+document.getElementById('downloadBtn').addEventListener('click', ()=>{
+  const blob = new Blob([window.__lastXML || buildXML()], {type:'application/xml'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'sysmonconfig.xml';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+/* ============ COMMUNITY CONFIGS ============ */
+const COMMUNITY_CONFIGS = [
+  {
+    name:"sysmon-config", author:"SwiftOnSecurity",
+    desc:"The de facto starting point. Heavily commented, general-purpose Windows baseline.",
+    repo:"https://github.com/SwiftOnSecurity/sysmon-config",
+    raw:"https://raw.githubusercontent.com/SwiftOnSecurity/sysmon-config/master/sysmonconfig-export.xml"
+  },
+  {
+    name:"sysmon-modular", author:"olafhartong",
+    desc:"Modular, MITRE ATT&CK-mapped rule library. This pulls the pre-built 'balanced' merged config.",
+    repo:"https://github.com/olafhartong/sysmon-modular",
+    raw:"https://raw.githubusercontent.com/olafhartong/sysmon-modular/master/sysmonconfig.xml"
+  },
+  {
+    name:"sysmon-config", author:"Neo23x0 (Florian Roth)",
+    desc:"Bleeding-edge fork of SwiftOnSecurity's baseline, maintained by Florian Roth (cyb3rops).",
+    repo:"https://github.com/Neo23x0/sysmon-config",
+    raw:"https://raw.githubusercontent.com/Neo23x0/sysmon-config/master/sysmonconfig-export.xml"
+  },
+  {
+    name:"sysmon-config", author:"ion-storm",
+    desc:"ATT&CK-focused fork aimed at UEBA / forensic visibility and CVE risk scoring, with rule-level author tagging.",
+    repo:"https://github.com/ion-storm/sysmon-config",
+    raw:"https://raw.githubusercontent.com/ion-storm/sysmon-config/develop/sysmonconfig-export.xml"
+  },
+  {
+    name:"SysmonCommunityGuide", author:"TrustedSec (Carlos Perez)",
+    desc:"Not a single config file — the canonical field guide to Sysmon internals, schema, and configuration strategy.",
+    repo:"https://github.com/trustedsec/SysmonCommunityGuide",
+    raw:null
+  }
+];
+
+function renderCommunityConfigs(){
+  const el = document.getElementById('communityConfigs');
+  el.innerHTML='';
+  COMMUNITY_CONFIGS.forEach((c,i)=>{
+    const card = document.createElement('div');
+    card.className='cc-card';
+    card.innerHTML = `
+      <div class="cc-name">${c.name}<span class="cc-author">by ${c.author}</span></div>
+      <div class="cc-desc">${c.desc}</div>
+      <div class="cc-btns">
+        ${c.raw? `<button class="cc-btn" data-i="${i}" data-act="dl">⬇ download</button>` : ''}
+        ${c.raw? `<button class="cc-btn secondary" data-i="${i}" data-act="importbtn">import to builder</button>` : ''}
+        <button class="cc-btn secondary" data-i="${i}" data-act="repo">view on github</button>
+      </div>
+      <div class="cc-status" id="ccStatus${i}"></div>
+    `;
+    if(c.raw){
+      card.querySelector('[data-act="dl"]').onclick = ()=>downloadCommunityConfig(c, i);
+      card.querySelector('[data-act="importbtn"]').onclick = ()=>importCommunityConfig(c, i);
+    }
+    card.querySelector('[data-act="repo"]').onclick = ()=>window.open(c.repo, '_blank', 'noopener');
+    el.appendChild(card);
+  });
+}
+
+async function downloadCommunityConfig(c, i){
+  const statusEl = document.getElementById('ccStatus'+i);
+  statusEl.textContent = 'fetching…';
+  try{
+    const res = await fetch(c.raw);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const text = await res.text();
+    const blob = new Blob([text], {type:'application/xml'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const fname = (c.author+'-'+c.name).toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.xml';
+    a.href = url; a.download = fname;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    statusEl.textContent = 'downloaded ✓';
+  }catch(err){
+    statusEl.textContent = 'blocked here — opening repo instead';
+    window.open(c.repo, '_blank', 'noopener');
+  }
+}
+async function importCommunityConfig(c, i){
+  const statusEl = document.getElementById('ccStatus'+i);
+  statusEl.textContent = 'fetching…';
+  try{
+    const res = await fetch(c.raw);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const text = await res.text();
+    const msg = importXML(text);
+    statusEl.textContent = 'imported ✓';
+    renderAll();
+  }catch(err){
+    statusEl.textContent = 'fetch blocked — try "download" then use "Load Your Own Config" above';
+  }
+}
+
+/* ============ DEPLOYMENT HELPER ============ */
+function archBinary(arch){
+  return {x64:"Sysmon64.exe", x86:"Sysmon.exe", arm64:"Sysmon64a.exe"}[arch];
+}
+function archService(arch){
+  return {x64:"Sysmon64", x86:"Sysmon", arm64:"Sysmon64a"}[arch];
+}
+
+/* SysmonForLinux (github.com/microsoft/SysmonForLinux) repo bootstrap + install
+   commands per distro family. Package name is always "sysmonforlinux"; only the
+   Microsoft repo registration step differs. */
+function linuxRepoSetup(distro){
+  switch(distro){
+    case 'ubuntu-debian':
+      return {
+        repo: `wget -q https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/packages-microsoft-prod.deb -O packages-microsoft-prod.deb\nsudo dpkg -i packages-microsoft-prod.deb\nsudo apt-get update`,
+        install: `sudo apt-get install -y sysmonforlinux`,
+        note: "On Debian (not Ubuntu), use /config/debian/<version>/ in the URL instead of /config/ubuntu/, with your Debian major version number."
+      };
+    case 'rhel-family':
+      return {
+        repo: `sudo rpm -Uvh https://packages.microsoft.com/config/rhel/$(. /etc/os-release && echo \${VERSION_ID%%.*})/packages-microsoft-prod.rpm`,
+        install: `sudo dnf install -y sysmonforlinux\n# or on older systems: sudo yum install -y sysmonforlinux`,
+        note: "Same repo path works for RHEL, CentOS Stream, Rocky Linux, and AlmaLinux."
+      };
+    case 'fedora':
+      return {
+        repo: `sudo rpm -Uvh https://packages.microsoft.com/config/fedora/$(rpm -E %fedora)/packages-microsoft-prod.rpm`,
+        install: `sudo dnf install -y sysmonforlinux`,
+        note: ""
+      };
+    case 'suse':
+      return {
+        repo: `# SUSE packages are RPM-based, but the exact repo URL varies more by SLES/openSUSE version\n# than the other distros — confirm the current path in the official INSTALL.md before running this:\n# https://github.com/microsoft/SysmonForLinux/blob/main/INSTALL.md`,
+        install: `sudo zypper install sysmonforlinux`,
+        note: "Treat the repo step as a placeholder — verify the SUSE-specific URL against the official install guide first."
+      };
+    case 'amazon-linux':
+      return {
+        repo: `# Amazon Linux isn't in Microsoft's officially-tested distro list.\n# AL2 tracks RHEL 7 closely enough that the rhel/7 repo usually works; AL2023 tracks RHEL 9:\nsudo rpm -Uvh https://packages.microsoft.com/config/rhel/7/packages-microsoft-prod.rpm   # Amazon Linux 2\n# sudo rpm -Uvh https://packages.microsoft.com/config/rhel/9/packages-microsoft-prod.rpm  # Amazon Linux 2023`,
+        install: `sudo yum install -y sysmonforlinux`,
+        note: "Not officially supported — test on a non-prod AMI before rolling this to fleet."
+      };
+  }
+}
+
+function renderDeploySteps(){
+  const el = document.getElementById('deploySteps');
+  let steps = [];
+  let footNote = '';
+
+  if(deployState.platform === 'windows'){
+    const bin = archBinary(deployState.arch);
+    const svc = archService(deployState.arch);
+    const isServerCore = deployState.os === 'servercore';
+
+    if(deployState.mode === 'install'){
+      steps = [
+        {t:"Open an elevated PowerShell prompt", c:"# Right-click PowerShell → Run as Administrator"},
+        {t:"Download Sysmon from Microsoft Sysinternals (skip this step and copy the folder in manually if this host has no internet access)",
+         c:`Invoke-WebRequest -Uri "https://download.sysinternals.com/files/Sysmon.zip" -OutFile "$env:TEMP\\Sysmon.zip"\nExpand-Archive "$env:TEMP\\Sysmon.zip" -DestinationPath "C:\\Tools\\Sysmon" -Force`},
+        {t:"Copy the sysmonconfig.xml you exported from this tool into the same folder",
+         c:`Copy-Item "$env:USERPROFILE\\Downloads\\sysmonconfig.xml" "C:\\Tools\\Sysmon\\sysmonconfig.xml"`},
+        {t:`Install the ${deployState.arch.toUpperCase()} Sysmon service with your config loaded`,
+         c:`cd C:\\Tools\\Sysmon\n.\\${bin} -accepteula -i sysmonconfig.xml`},
+        {t:"Confirm the service installed and is running",
+         c:`Get-Service ${svc}`},
+        {t:"Confirm events are actually flowing",
+         c: `Get-WinEvent -LogName "Microsoft-Windows-Sysmon/Operational" -MaxEvents 5\n# or: Event Viewer -> Applications and Services Logs -> Microsoft -> Windows -> Sysmon -> Operational`}
+      ];
+    } else {
+      steps = [
+        {t:"Open an elevated PowerShell prompt", c:"# Right-click PowerShell → Run as Administrator"},
+        {t:"Back up the currently-running config before overwriting it",
+         c:`Copy-Item "C:\\Tools\\Sysmon\\sysmonconfig.xml" "C:\\Tools\\Sysmon\\sysmonconfig-backup-$(Get-Date -Format yyyyMMdd).xml"`},
+        {t:"Copy the new sysmonconfig.xml onto the host",
+         c:`Copy-Item "$env:USERPROFILE\\Downloads\\sysmonconfig.xml" "C:\\Tools\\Sysmon\\sysmonconfig.xml" -Force`},
+        {t:"Reload the running service with the new config — this does NOT reinstall the driver or restart the service",
+         c:`cd C:\\Tools\\Sysmon\n.\\${bin} -c sysmonconfig.xml`},
+        {t:"Confirm the change was applied — Sysmon logs Event ID 16 whenever the config hash changes",
+         c:`Get-WinEvent -LogName "Microsoft-Windows-Sysmon/Operational" | Where-Object { $_.Id -eq 16 } | Select-Object -First 1 -Property TimeCreated,Message`}
+      ];
+    }
+    if(isServerCore) footNote = `<div class="deploy-note">⚠ Server Core has no GUI — skip Event Viewer / Notepad++ steps and manage everything through PowerShell as shown above.</div>`;
+
+  } else {
+    /* Linux: Microsoft's open-source SysmonForLinux (github.com/microsoft/SysmonForLinux),
+       an eBPF-based port. Package name, CLI, and log destination all differ from Windows. */
+    const rs = linuxRepoSetup(deployState.distro);
+
+    if(deployState.mode === 'install'){
+      steps = [
+        {t:"Add the Microsoft package repository for your distro", c: rs.repo},
+        {t:"Install SysmonForLinux", c: rs.install},
+        {t:"Copy the sysmonconfig.xml you exported from this tool onto the host (however you normally move files — scp, config management, etc.)",
+         c:`scp ./sysmonconfig.xml youruser@target-host:/tmp/sysmonconfig.xml`},
+        {t:"Install the service with your config loaded (no -accepteula flag on Linux — the CLI differs slightly from Windows here)",
+         c:`sudo sysmon -i /tmp/sysmonconfig.xml`},
+        {t:"Confirm the service installed and is running (systemd-managed)",
+         c:`sudo systemctl status sysmon`},
+        {t:"Confirm events are actually flowing — Linux logs to syslog/journald, not Event Viewer",
+         c:`sudo journalctl -u sysmon -n 20 --no-pager\n# or, if your distro still uses classic syslog:\nsudo tail -f /var/log/syslog | sudo /opt/sysmon/sysmonLogView`}
+      ];
+    } else {
+      steps = [
+        {t:"Back up the currently-active config by dumping it (sysmon -c with no file prints the running config)",
+         c:`sudo sysmon -c > sysmonconfig-backup-$(date +%Y%m%d).xml`},
+        {t:"Copy the new sysmonconfig.xml onto the host",
+         c:`scp ./sysmonconfig.xml youruser@target-host:/tmp/sysmonconfig.xml`},
+        {t:"Apply the new config — this reloads the running driver without reinstalling it",
+         c:`sudo sysmon -c /tmp/sysmonconfig.xml`},
+        {t:"Confirm it reloaded cleanly",
+         c:`sudo journalctl -u sysmon -n 20 --no-pager`}
+      ];
+    }
+    if(rs.note) footNote = `<div class="deploy-note">⚠ ${rs.note}</div>`;
+    footNote += `<div class="deploy-note">⚠ SysmonForLinux (github.com/microsoft/SysmonForLinux) is an eBPF-based port and doesn't support every event type this tool can generate — notably FileBlockExecutable, FileBlockShredding, and FileExecutableDetected (IDs 27–29) are Windows-only. Double-check your exported config only uses event types the Linux build actually implements.</div>`;
+  }
+
+  el.innerHTML = steps.map((s,i)=>`
+    <div class="step">
+      <div class="step-top-row">
+        <span class="step-num">STEP ${i+1}</span>
+        <button class="copy-btn" data-idx="${i}">⧉ copy</button>
+      </div>
+      <div class="step-text">${s.t}</div>
+      <div class="step-cmd">${s.c.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+    </div>
+  `).join('') + footNote;
+
+  el.querySelectorAll('.copy-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>copyToClipboard(steps[btn.dataset.idx].c, btn));
+  });
+  window.__deploySteps = steps;
+}
+
+/* Clipboard helper with a manual-select fallback for environments that block
+   the async Clipboard API (some sandboxed/embedded browser contexts do). */
+function copyToClipboard(text, btn){
+  const flash = (ok)=>{
+    const orig = btn.textContent;
+    btn.textContent = ok ? '✓ copied' : 'copy failed — select manually';
+    btn.classList.toggle('copied', ok);
+    setTimeout(()=>{ btn.textContent = orig; btn.classList.remove('copied'); }, 1600);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>flash(true)).catch(()=>fallbackCopy(text, flash));
+  } else {
+    fallbackCopy(text, flash);
+  }
+}
+function fallbackCopy(text, flash){
+  try{
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    flash(ok);
+  }catch(err){
+    flash(false);
+  }
+}
+document.getElementById('copyAllBtn').addEventListener('click', ()=>{
+  const btn = document.getElementById('copyAllBtn');
+  const all = (window.__deploySteps||[]).map((s,i)=>`# STEP ${i+1}: ${s.t}\n${s.c}`).join('\n\n');
+  copyToClipboard(all, btn);
+});
+
+document.querySelectorAll('#deployPlatform button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    deployState.platform = btn.dataset.v;
+    document.querySelectorAll('#deployPlatform button').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    const isLinux = deployState.platform === 'linux';
+    document.getElementById('fieldOs').dataset.hidden = isLinux ? 'true' : 'false';
+    document.getElementById('fieldArch').dataset.hidden = isLinux ? 'true' : 'false';
+    document.getElementById('fieldDistro').dataset.hidden = isLinux ? 'false' : 'true';
+    renderDeploySteps();
+  });
+});
+document.querySelectorAll('#deployMode button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    deployState.mode = btn.dataset.v;
+    document.querySelectorAll('#deployMode button').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    renderDeploySteps();
+  });
+});
+document.getElementById('deployOs').addEventListener('change', e=>{ deployState.os = e.target.value; renderDeploySteps(); });
+document.getElementById('deployArch').addEventListener('change', e=>{ deployState.arch = e.target.value; renderDeploySteps(); });
+document.getElementById('deployDistro').addEventListener('change', e=>{ deployState.distro = e.target.value; renderDeploySteps(); });
+
+/* ============ MAIN RENDER ============ */
+function renderAll(){
+  renderEventList();
+  renderNonFilterable();
+  renderCommunityConfigs();
+  renderBuilder();
+  renderGlobal();
+  renderCoverage();
+  renderPreview();
+}
+renderAll();
+renderDeploySteps();
+</script>
+</body>
+</html>
